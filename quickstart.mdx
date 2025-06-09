@@ -63,7 +63,7 @@ for _ in range(50):
     action = agent.predict(observation)
     observation, reward = await env.step(action)
 ```
-> **Loop breakdown**
+> **Agent action loop breakdown**
 > 1. `agent.predict(observation)` returns an action to execute.
 > 2. `step(action)` executes the action and returns the next observation & reward.
 
