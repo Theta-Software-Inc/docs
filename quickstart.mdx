@@ -1,97 +1,82 @@
 ---
 title: 'Quickstart'
-description: 'Start building awesome documentation in under 5 minutes'
+description: 'Get started with the Theta Python SDK in minutes'
 ---
 
-## Setup your development
+## 1. Prerequisites
 
-Learn how to update your docs locally and deploy them to the public.
+- Python ≥ 3.9
+- A valid **Theta API key**
 
-### Edit and preview
+Create a `.env` file at the project root:
 
-<AccordionGroup>
-  <Accordion icon="github" title="Clone your docs locally">
-    During the onboarding process, we created a repository on your Github with
-    your docs content. You can find this repository on our
-    [dashboard](https://dashboard.mintlify.com). To clone the repository
-    locally, follow these
-    [instructions](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository)
-    in your terminal.
-  </Accordion>
-  <Accordion icon="rectangle-terminal" title="Preview changes">
-    Previewing helps you make sure your changes look as intended. We built a
-    command line interface to render these changes locally. 
-    1. Install the
-    [Mintlify CLI](https://www.npmjs.com/package/mintlify) to preview the
-    documentation changes locally with this command: ``` npm i -g mintlify ```
-    2. Run the following command at the root of your documentation (where
-    `docs.json` is): ``` mintlify dev ```
-    <Note>
-      If you’re currently using the legacy ```mint.json``` configuration file, please update the Mintlify CLI:
+```bash
+THETA_API_KEY=your_theta_key
+```
 
+## 2. Install
 
-      ```npm i -g mintlify@latest```
-      And run the new upgrade command in your docs repository:
+```bash
+uv venv .venv && source .venv/bin/activate   # create and activate venv
+uv pip install -r pyproject.toml             # install requirements in venv
+```
 
-      ```mintlify upgrade```
-      You should now be using the new ```docs.json``` configuration file. Feel free to delete the ```mint.json``` file from your repository.
-    </Note>
-  </Accordion>
-</AccordionGroup>
+## 3. Core SDK workflow
 
-### Deploy your changes
+Below is a high-level overview of the SDK workflow:
 
-<AccordionGroup>
+### 3.1 Create a session and environment
 
-<Accordion icon="message-bot" title="Install our Github app">
-  Our Github app automatically deploys your changes to your docs site, so you
-  don't need to manage deployments yourself. You can find the link to install on
-  your [dashboard](https://dashboard.mintlify.com). Once the bot has been
-  successfully installed, there should be a check mark next to the commit hash
-  of the repo.
-</Accordion>
-<Accordion icon="rocket" title="Push your changes">
-  [Commit and push your changes to
-  Git](https://docs.github.com/en/get-started/using-git/pushing-commits-to-a-remote-repository#about-git-push)
-  for your changes to update in your docs site. If you push and don't see that
-  the Github app successfully deployed your changes, you can also manually
-  update your docs through our [dashboard](https://dashboard.mintlify.com).
-</Accordion>
+```python
+session = await client.create_session(
+    name="Example Run",
+    env_type="desktop",
+    eval_set="cub_sample"
+)
+env = await session.create_environment(task="epa")
+```
 
-</AccordionGroup>
+> **What’s happening?**
+> • `create_session` provisions a remote virtual machine and returns a `Session` handle.  
+> • `env_type="desktop"` indicates that the agent environment is a full desktop.  
+> • `eval_set` chooses the benchmark problem to evaluate on. Here we use the *cub_sample* set.  
+> • `create_environment(task="epa")` spins up the task inside that VM and returns an `Environment` instance.
 
-## Update your docs
+### 3.2 (Optional) Retrieve a VNC URL
 
-Add content directly in your files with MDX syntax and React components. You can use any of our components, or even build your own.
+```python
+remote_url = await env.get_remote_url()  # view the environment remotely
+```
 
-<CardGroup>
+> Open the returned URL in your browser to watch the environment via VNC for live debugging (optional).
 
-<Card title="Add Content With MDX" icon="file" href="/essentials/markdown">
-  Add content to your docs with MDX syntax.
-</Card>
+### 3.3 Interact with the environment
 
-<Card
-  title="Add Code Blocks"
-  icon="square-code"
-  href="/essentials/code"
->
-  Add code directly to your docs with syntax highlighting.
-</Card>
+```python
+agent.set_task(env.instruction)
+observation, reward = await env.reset()
+for _ in range(50):
+    action = agent.predict(observation)
+    observation, reward = await env.step(action)
+```
 
-<Card
-  title="Add Images"
-  icon="image"
-  href="/essentials/images"
->
-  Add images to your docs to make them more engaging.
-</Card>
+> **Loop breakdown**  
+> 1. `reset()` gives the initial observation.  
+> 2. Your `agent.predict` chooses an action.  
+> 3. `step(action)` sends the action and returns the next observation & reward.  
+> Iterate until done or a fixed step budget.
 
-<Card
-  title="Add Custom Components"
-  icon="puzzle-piece"
-  href="/essentials/reusable-snippets"
->
-  Add templates to your docs to make them more reusable.
-</Card>
+### 3.4 Evaluate and close
 
-</CardGroup>
+```python
+score = await env.evaluate()  # 0 ≤ score ≤ 1
+await env.close()
+```
+
+> `evaluate()` returns a normalized score (1 = perfect). Call `close()` to end the session.
+
+<Note>
+Use `example.py` as a starting point for your own experiments. The `env` object logs the agent trajectory and the session object tracks summary statistics across runs.
+</Note>
+
+Need help? Contact us at [founders@thetasoftware.ai](mailto:founders@thetasoftware.ai).
