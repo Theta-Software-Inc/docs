@@ -21,6 +21,7 @@ uv venv .venv && source .venv/bin/activate   # create and activate venv
 uv pip install -r pyproject.toml             # install requirements in venv
 ```
 
+
 ## 3. Core SDK workflow
 
 Below is a high-level overview of the SDK workflow:
@@ -29,18 +30,16 @@ Below is a high-level overview of the SDK workflow:
 
 ```python
 session = await client.create_session(
-    name="Example Run",
-    env_type="desktop",
-    eval_set="cub_sample"
+    name= "Example Run",
+    env_type= "desktop",
+    eval_set= "cub_sample"
 )
 env = await session.create_environment(task="epa")
 ```
-
-> **What’s happening?**
-> • `create_session` provisions a remote virtual machine and returns a `Session` handle.  
+> • `create_session` provisions a session.  
 > • `env_type="desktop"` indicates that the agent environment is a full desktop.  
 > • `eval_set` chooses the benchmark problem to evaluate on. Here we use the *cub_sample* set.  
-> • `create_environment(task="epa")` spins up the task inside that VM and returns an `Environment` instance.
+> • `create_environment(task="epa")` spins up the EPA task inside our configured environment and returns an `Environment` instance.  
 
 ### 3.2 (Optional) Retrieve a VNC URL
 
@@ -49,8 +48,13 @@ remote_url = await env.get_remote_url()  # view the environment remotely
 ```
 
 > Open the returned URL in your browser to watch the environment via VNC for live debugging (optional).
+> The returned link is temporary and secured to your account; it expires when the session ends.
 
 ### 3.3 Interact with the environment
+
+
+> • `set_task(env.instruction)` sets the task for the agent.  
+> • `reset()` gives the initial observation.
 
 ```python
 agent.set_task(env.instruction)
@@ -59,12 +63,9 @@ for _ in range(50):
     action = agent.predict(observation)
     observation, reward = await env.step(action)
 ```
-
-> **Loop breakdown**  
-> 1. `reset()` gives the initial observation.  
-> 2. Your `agent.predict` chooses an action.  
-> 3. `step(action)` sends the action and returns the next observation & reward.  
-> Iterate until done or a fixed step budget.
+> **Loop breakdown**
+> 1. `agent.predict(observation)` returns an action to execute.
+> 2. `step(action)` executes the action and returns the next observation & reward.
 
 ### 3.4 Evaluate and close
 
@@ -74,6 +75,7 @@ await env.close()
 ```
 
 > `evaluate()` returns a normalized score (1 = perfect). Call `close()` to end the session.
+
 
 <Note>
 Use `example.py` as a starting point for your own experiments. The `env` object logs the agent trajectory and the session object tracks summary statistics across runs.
