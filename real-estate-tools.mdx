@@ -1,0 +1,691 @@
+---
+title: 'Real Estate Tools'
+description: 'Real estate data, property valuations, market analysis tools with access to 140+ million property records, plus construction cost data'
+---
+
+# 🏠 Real Estate Tools
+
+Real estate data, property valuations, market analysis tools with access to 140+ million property records, plus construction cost data.
+
+## Property Data Tools
+
+### `getPropertyRecords`
+Search for property records by location and attributes.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="getPropertyRecords - Request"
+{
+  "address": "string (optional) - Property address",
+  "city": "string (optional) - City name",
+  "state": "string (optional) - State name",
+  "zipCode": "string (optional) - ZIP code",
+  "propertyType": "string (optional) - Property type",
+  "bedrooms": "integer (optional) - Number of bedrooms",
+  "bathrooms": "number (optional) - Number of bathrooms",
+  "squareFootage": "integer (optional) - Square footage",
+  "lotSize": "integer (optional) - Lot size in square feet",
+  "yearBuilt": "integer (optional) - Year the property was built",
+  "limit": "integer (default: 20) - Result limit",
+  "offset": "integer (default: 0) - Result offset for pagination"
+}
+```
+
+**Response:**
+```json title="getPropertyRecords - Response"
+{
+  "properties": [
+    {
+      "id": "prop_12345",
+      "address": "123 Main St, Austin, TX 78701",
+      "propertyType": "Single Family",
+      "bedrooms": 3,
+      "bathrooms": 2,
+      "squareFootage": 1500,
+      "lotSize": 7200,
+      "yearBuilt": 1995,
+      "lastSaleDate": "2022-03-15",
+      "lastSalePrice": 450000,
+      "estimatedValue": 485000,
+      "taxAssessment": 425000
+    }
+  ],
+  "total_count": 150,
+  "page_info": {
+    "limit": 20,
+    "offset": 0,
+    "has_more": true
+  }
+}
+```
+
+</Accordion>
+
+---
+
+### `getPropertyById`
+Get detailed property information by property ID.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="getPropertyById - Request"
+{
+  "propertyId": "string (required) - Unique property identifier"
+}
+```
+
+**Response:**
+```json title="getPropertyById - Response"
+{
+  "id": "prop_12345",
+  "address": "123 Main St, Austin, TX 78701",
+  "propertyType": "Single Family",
+  "bedrooms": 3,
+  "bathrooms": 2,
+  "squareFootage": 1500,
+  "lotSize": 7200,
+  "yearBuilt": 1995,
+  "detailed_info": {
+    "construction_type": "Frame",
+    "roof_material": "Asphalt Shingle",
+    "heating_type": "Central",
+    "cooling_type": "Central Air"
+  }
+}
+```
+
+</Accordion>
+
+---
+
+### `getRandomProperties`
+Get random property records for sampling and discovery.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="getRandomProperties - Request"
+{
+  "limit": "integer (default: 20) - Number of random properties to return"
+}
+```
+
+</Accordion>
+
+## Property Valuation Tools
+
+### `getValueEstimate`
+Get property value estimates with comparable sales analysis.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="getValueEstimate - Request"
+{
+  "address": "string (optional) - Property address",
+  "latitude": "number (optional) - Property latitude",
+  "longitude": "number (optional) - Property longitude",
+  "propertyType": "string (optional) - Property type",
+  "bedrooms": "integer (optional) - Number of bedrooms",
+  "bathrooms": "number (optional) - Number of bathrooms",
+  "squareFootage": "integer (optional) - Square footage",
+  "maxRadius": "number (optional) - Maximum search radius for comparables in miles",
+  "daysOld": "integer (optional) - Maximum age of comparable sales in days",
+  "compCount": "integer (optional) - Number of comparable sales to include"
+}
+```
+
+**Response:**
+```json title="getValueEstimate - Response"
+{
+  "address": "123 Main St, Austin, TX",
+  "estimate": {
+    "value": 485000,
+    "low": 460000,
+    "high": 510000,
+    "confidence": 0.85,
+    "date": "2024-01-15"
+  },
+  "comparables": [
+    {
+      "address": "125 Main St",
+      "sold_date": "2023-12-01",
+      "sold_price": 475000,
+      "bedrooms": 3,
+      "bathrooms": 2,
+      "square_footage": 1480,
+      "distance_miles": 0.1
+    }
+  ],
+  "price_per_sqft": 323,
+  "methodology": "Automated Valuation Model"
+}
+```
+
+</Accordion>
+
+---
+
+### `getRentEstimate`
+Get property rent estimates with rental comparables.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="getRentEstimate - Request"
+{
+  "address": "string (optional) - Property address",
+  "latitude": "number (optional) - Property latitude",
+  "longitude": "number (optional) - Property longitude",
+  "propertyType": "string (optional) - Property type",
+  "bedrooms": "integer (optional) - Number of bedrooms",
+  "bathrooms": "number (optional) - Number of bathrooms",
+  "squareFootage": "integer (optional) - Square footage",
+  "maxRadius": "number (optional) - Maximum search radius for comparables in miles",
+  "daysOld": "integer (optional) - Maximum age of comparable rentals in days",
+  "compCount": "integer (optional) - Number of comparable rentals to include"
+}
+```
+
+**Response:**
+```json title="getRentEstimate - Response"
+{
+  "address": "123 Main St, Austin, TX",
+  "rent_estimate": {
+    "rent": 2400,
+    "low": 2200,
+    "high": 2600,
+    "confidence": 0.82,
+    "date": "2024-01-15"
+  },
+  "comparable_rentals": [
+    {
+      "address": "127 Main St",
+      "monthly_rent": 2350,
+      "bedrooms": 3,
+      "bathrooms": 2,
+      "square_footage": 1520,
+      "distance_miles": 0.2
+    }
+  ],
+  "rent_per_sqft": 1.60,
+  "market_trends": {
+    "monthly_change": 0.02,
+    "yearly_change": 0.08
+  }
+}
+```
+
+</Accordion>
+
+## Property Listings Tools
+
+### `getSaleListings`
+Search for active property listings for sale.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="getSaleListings - Request"
+{
+  "address": "string (optional) - Property address",
+  "city": "string (optional) - City name",
+  "state": "string (optional) - State name",
+  "zipCode": "string (optional) - ZIP code",
+  "latitude": "number (optional) - Search center latitude",
+  "longitude": "number (optional) - Search center longitude",
+  "radius": "number (optional) - Search radius in miles",
+  "propertyType": "string (optional) - Property type filter",
+  "bedrooms": "integer (optional) - Number of bedrooms",
+  "bathrooms": "number (optional) - Number of bathrooms",
+  "squareFootage": "integer (optional) - Square footage",
+  "priceMin": "integer (optional) - Minimum listing price",
+  "priceMax": "integer (optional) - Maximum listing price",
+  "status": "string (optional) - Listing status filter",
+  "limit": "integer (default: 20) - Result limit",
+  "offset": "integer (default: 0) - Result offset for pagination"
+}
+```
+
+**Response:**
+```json title="getSaleListings - Response"
+{
+  "listings": [
+    {
+      "id": "listing_12345",
+      "address": "456 Oak St, Austin, TX",
+      "price": 525000,
+      "bedrooms": 4,
+      "bathrooms": 3,
+      "squareFootage": 2100,
+      "propertyType": "Single Family",
+      "status": "Active",
+      "listingDate": "2024-01-10",
+      "daysOnMarket": 5
+    }
+  ],
+  "total_count": 45,
+  "search_criteria": {
+    "city": "Austin",
+    "state": "TX",
+    "priceMax": 600000
+  }
+}
+```
+
+</Accordion>
+
+---
+
+### `getRentalListings`
+Search for active rental property listings.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="getRentalListings - Request"
+{
+  "address": "string (optional) - Property address",
+  "city": "string (optional) - City name",
+  "state": "string (optional) - State name",
+  "zipCode": "string (optional) - ZIP code",
+  "latitude": "number (optional) - Search center latitude",
+  "longitude": "number (optional) - Search center longitude",
+  "radius": "number (optional) - Search radius in miles",
+  "propertyType": "string (optional) - Property type filter",
+  "bedrooms": "integer (optional) - Number of bedrooms",
+  "bathrooms": "number (optional) - Number of bathrooms",
+  "squareFootage": "integer (optional) - Square footage",
+  "rentMin": "integer (optional) - Minimum monthly rent",
+  "rentMax": "integer (optional) - Maximum monthly rent",
+  "status": "string (optional) - Listing status filter",
+  "limit": "integer (default: 20) - Result limit",
+  "offset": "integer (default: 0) - Result offset for pagination"
+}
+```
+
+</Accordion>
+
+---
+
+### `getSaleListingById`
+Get detailed sale listing information by listing ID.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="getSaleListingById - Request"
+{
+  "listingId": "string (required) - Unique sale listing identifier"
+}
+```
+
+</Accordion>
+
+---
+
+### `getRentalListingById`
+Get detailed rental listing information by listing ID.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="getRentalListingById - Request"
+{
+  "listingId": "string (required) - Unique rental listing identifier"
+}
+```
+
+</Accordion>
+
+## Market Analysis Tools
+
+### `getMarketStatistics`
+Get market statistics and trends for a ZIP code area.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="getMarketStatistics - Request"
+{
+  "zipCode": "string (required) - ZIP code for market analysis"
+}
+```
+
+**Response:**
+```json title="getMarketStatistics - Response"
+{
+  "zipCode": "78701",
+  "market_statistics": {
+    "median_sale_price": 485000,
+    "median_rent": 2400,
+    "price_per_sqft": 320,
+    "rent_per_sqft": 1.60,
+    "inventory_count": 45,
+    "days_on_market_avg": 28,
+    "price_change_30d": 0.02,
+    "price_change_1y": 0.12
+  },
+  "property_types": [
+    {
+      "type": "Single Family",
+      "count": 30,
+      "median_price": 525000
+    },
+    {
+      "type": "Condo",
+      "count": 15,
+      "median_price": 385000
+    }
+  ]
+}
+```
+
+</Accordion>
+
+---
+
+### `analyzeProperty`
+Get comprehensive property analysis including value estimate, rent estimate, and comparables.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="analyzeProperty - Request"
+{
+  "address": "string (required) - Property address",
+  "propertyType": "string (optional) - Property type",
+  "bedrooms": "integer (optional) - Number of bedrooms",
+  "bathrooms": "number (optional) - Number of bathrooms",
+  "squareFootage": "integer (optional) - Square footage"
+}
+```
+
+**Response:**
+```json title="analyzeProperty - Response"
+{
+  "property": {
+    "address": "123 Main St, Austin, TX",
+    "propertyType": "Single Family",
+    "bedrooms": 3,
+    "bathrooms": 2,
+    "squareFootage": 1500
+  },
+  "value_estimate": {
+    "value": 485000,
+    "confidence": 0.85
+  },
+  "rent_estimate": {
+    "rent": 2400,
+    "confidence": 0.82
+  },
+  "investment_metrics": {
+    "gross_yield": 5.9,
+    "price_to_rent_ratio": 16.9,
+    "cash_flow_potential": "positive"
+  }
+}
+```
+
+</Accordion>
+
+---
+
+### `compareMarkets`
+Compare market statistics across multiple ZIP code areas.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="compareMarkets - Request"
+{
+  "zipCodes": "array[string] (required) - List of ZIP codes to compare"
+}
+```
+
+**Response:**
+```json title="compareMarkets - Response"
+{
+  "markets": {
+    "78701": {
+      "median_sale_price": 485000,
+      "median_rent": 2400,
+      "price_change_1y": 0.12
+    },
+    "78702": {
+      "median_sale_price": 425000,
+      "median_rent": 2200,
+      "price_change_1y": 0.08
+    }
+  },
+  "comparison": {
+    "highest_appreciation": "78701",
+    "best_rental_yield": "78702",
+    "lowest_price_entry": "78702"
+  }
+}
+```
+
+</Accordion>
+
+---
+
+### `findInvestmentProperties`
+Find potential investment properties with value and rent estimates for ROI analysis.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="findInvestmentProperties - Request"
+{
+  "city": "string (required) - City to search",
+  "state": "string (required) - State to search",
+  "maxPrice": "integer (optional) - Maximum purchase price",
+  "minBedrooms": "integer (optional) - Minimum number of bedrooms",
+  "propertyType": "string (optional) - Property type filter",
+  "limit": "integer (default: 10) - Number of properties to analyze"
+}
+```
+
+**Response:**
+```json title="findInvestmentProperties - Response"
+{
+  "search_criteria": {
+    "city": "Austin",
+    "state": "TX",
+    "maxPrice": 500000,
+    "minBedrooms": 2
+  },
+  "properties": [
+    {
+      "listing": {
+        "address": "789 Investment Ave",
+        "price": 425000,
+        "bedrooms": 3,
+        "bathrooms": 2
+      },
+      "rent_estimate": {
+        "rent": 2200
+      },
+      "investment_metrics": {
+        "monthly_gross_yield_percent": 0.52,
+        "annual_gross_yield_percent": 6.21,
+        "price_to_rent_ratio": 16.1
+      }
+    }
+  ]
+}
+```
+
+</Accordion>
+
+## Construction Cost Tools
+
+### `searchSources`
+Search for construction cost data by location and material type.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="searchSources - Request"
+{
+  "search_term": "string (required) - Search term for materials/services",
+  "state": "string (required) - State name (e.g., 'California')",
+  "county": "string (required) - County name (e.g., 'Los Angeles County')",
+  "source_type": "string (optional) - Type: MATERIAL/LABOR/EQUIPMENT/ASSEMBLY/SCOPE",
+  "limit": "integer (default: 10) - Number of results",
+  "category_path": "array[string] (optional) - Category filter",
+  "zipcode": "string (optional) - ZIP code for location"
+}
+```
+
+**Response:**
+```json title="searchSources - Response"
+{
+  "sources": [
+    {
+      "id": "src_12345",
+      "name": "Concrete Ready Mix 3000 PSI",
+      "source_type": "MATERIAL",
+      "description": "Standard concrete mix for foundation work",
+      "total_cost_usd": 125.50,
+      "labor_cost_usd": 35.00,
+      "material_cost_usd": 90.50,
+      "unit": "cubic yard"
+    }
+  ],
+  "total_count": 25,
+  "search_term": "concrete",
+  "location": "Los Angeles County, California"
+}
+```
+
+</Accordion>
+
+---
+
+### `getLaborRates`
+Get labor rates for specific construction trades.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="getLaborRates - Request"
+{
+  "trade": "string (required) - Construction trade (e.g., 'carpenter', 'electrician', 'plumber', 'contractor')",
+  "state": "string (required) - State name (e.g., 'California')",
+  "county": "string (required) - County name (e.g., 'Los Angeles County')"
+}
+```
+
+**Response:**
+```json title="getLaborRates - Response"
+{
+  "sources": [
+    {
+      "id": "src_67890",
+      "name": "Licensed Electrician - Commercial",
+      "source_type": "LABOR",
+      "total_cost_usd": 85.00,
+      "labor_cost_usd": 85.00,
+      "description": "Per hour rate for commercial electrical work"
+    }
+  ],
+  "total_count": 5,
+  "search_term": "electrician",
+  "location": "Los Angeles County, California"
+}
+```
+
+</Accordion>
+
+---
+
+### `getEquipmentRentalRates`
+Get equipment rental rates for construction equipment.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="getEquipmentRentalRates - Request"
+{
+  "equipment_type": "string (required) - Type of equipment (e.g., 'excavator', 'crane', 'bulldozer', 'forklift')",
+  "state": "string (required) - State name (e.g., 'California')",
+  "county": "string (required) - County name (e.g., 'Los Angeles County')"
+}
+```
+
+**Response:**
+```json title="getEquipmentRentalRates - Response"
+{
+  "sources": [
+    {
+      "id": "src_11111",
+      "name": "Excavator 320 Size - Daily Rental",
+      "source_type": "EQUIPMENT",
+      "total_cost_usd": 450.00,
+      "material_cost_usd": 450.00,
+      "description": "Mid-size excavator daily rental rate"
+    }
+  ],
+  "total_count": 5,
+  "search_term": "excavator",
+  "location": "Los Angeles County, California"
+}
+```
+
+</Accordion>
+
+## Usage Examples
+
+### Investment Property Analysis
+```python
+# Find properties in target market
+properties = call_tool("getPropertyRecords", {
+  "city": "Austin",
+  "state": "TX",
+  "bedrooms": 3,
+  "priceMax": 500000
+})
+
+# Get value and rent estimates
+for property in properties:
+  value_estimate = call_tool("getValueEstimate", {
+    "address": property["address"]
+  })
+  
+  rent_estimate = call_tool("getRentEstimate", {
+    "address": property["address"]
+  })
+
+# Compare multiple markets
+market_comparison = call_tool("compareMarkets", {
+  "zipCodes": ["78701", "78702", "78703"]
+})
+```
+
+### Construction Cost Analysis
+```python
+# Get material costs
+concrete_costs = call_tool("searchSources", {
+  "search_term": "concrete",
+  "state": "Texas",
+  "county": "Travis"
+})
+
+# Get labor rates
+labor_rates = call_tool("getLaborRates", {
+  "trade": "contractor",
+  "state": "Texas",
+  "county": "Travis"
+})
+
+# Get equipment rental costs
+equipment_costs = call_tool("getEquipmentRentalRates", {
+  "equipment_type": "excavator",
+  "state": "Texas", 
+  "county": "Travis"
+})
+```

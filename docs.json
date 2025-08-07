@@ -19,6 +19,17 @@
               "index",
               "mcp-environments"
             ]
+          },
+          {
+            "group": "MCP Tools Reference",
+            "pages": [
+              "excel-tools",
+              "financial-tools",
+              "private-market-tools",
+              "real-estate-tools",
+              "accounting-tools",
+              "document-tools"
+            ]
           }
         ]
       }

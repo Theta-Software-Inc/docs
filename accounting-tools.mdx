@@ -1,0 +1,378 @@
+---
+title: 'Accounting Tools'
+description: 'Double-entry accounting system via Ledger CLI for comprehensive financial reporting and analysis'
+---
+
+# 📈 Accounting Tools
+
+Double-entry accounting system via Ledger CLI for comprehensive financial reporting and analysis.
+
+> **Note**: Based on the powerful [Ledger CLI](https://github.com/minhyeoky/mcp-server-ledger) system for professional accounting workflows.
+
+## Account Balance Tools
+
+### `ledger_balance`
+Shows account balances with powerful filtering options for comprehensive financial reporting.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="ledger_balance - Request"
+{
+  "query": "string (optional) - Query pattern to filter accounts (e.g., 'Assets', 'Expenses:Food')",
+  "date_range": "string (optional) - Date range for the report (e.g., '2024', 'last month', 'Q1 2024')",
+  "display_options": "object (optional) - Additional display formatting options"
+}
+```
+
+**Response:**
+```json title="ledger_balance - Response"
+{
+  "success": true,
+  "balance_report": "Formatted balance report showing account totals",
+  "total_balance": "Summary of filtered accounts",
+  "query_applied": "Assets",
+  "date_range": "2024"
+}
+```
+
+</Accordion>
+
+---
+
+### `ledger_register`
+Shows transaction register with detailed history for account analysis.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="ledger_register - Request"
+{
+  "query": "string (optional) - Query pattern to filter transactions",
+  "date_range": "string (optional) - Date range for transactions",
+  "sorting_options": "object (optional) - Options for sorting the register output"
+}
+```
+
+**Response:**
+```json title="ledger_register - Response"
+{
+  "success": true,
+  "register_report": "Detailed transaction register with dates, descriptions, and amounts",
+  "transaction_count": 45,
+  "date_range": "last month",
+  "total_amount": "$2,450.00"
+}
+```
+
+</Accordion>
+
+## Account Management Tools
+
+### `ledger_accounts`
+Lists all accounts in the ledger file with optional filtering.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="ledger_accounts - Request"
+{
+  "query": "string (optional) - Query pattern to filter account names"
+}
+```
+
+**Response:**
+```json title="ledger_accounts - Response"
+{
+  "success": true,
+  "accounts": [
+    "Assets:Checking",
+    "Assets:Savings",
+    "Income:Salary",
+    "Expenses:Food",
+    "Expenses:Utilities"
+  ],
+  "account_count": 25,
+  "query_applied": "Income"
+}
+```
+
+</Accordion>
+
+---
+
+### `ledger_payees`
+Lists all payees from transactions with optional filtering.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="ledger_payees - Request"
+{
+  "query": "string (optional) - Query pattern to filter payee names"
+}
+```
+
+**Response:**
+```json title="ledger_payees - Response"
+{
+  "success": true,
+  "payees": [
+    "Amazon",
+    "Whole Foods",
+    "Utility Company",
+    "Employer Corp"
+  ],
+  "payee_count": 42,
+  "query_applied": "Amazon"
+}
+```
+
+</Accordion>
+
+---
+
+### `ledger_commodities`
+Lists all commodities (currencies) used in the ledger.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="ledger_commodities - Request"
+{
+  "query": "string (optional) - Query pattern to filter commodities"
+}
+```
+
+**Response:**
+```json title="ledger_commodities - Response"
+{
+  "success": true,
+  "commodities": [
+    "USD",
+    "EUR",
+    "AAPL",
+    "BTC"
+  ],
+  "commodity_count": 8
+}
+```
+
+</Accordion>
+
+## Transaction Analysis Tools
+
+### `ledger_print`
+Prints transactions in ledger format for detailed analysis.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="ledger_print - Request"
+{
+  "query": "string (optional) - Query pattern to filter transactions",
+  "date_range": "string (optional) - Date range for transactions"
+}
+```
+
+**Response:**
+```json title="ledger_print - Response"
+{
+  "success": true,
+  "ledger_entries": "Formatted ledger entries in standard double-entry format",
+  "transaction_count": 15,
+  "date_range": "Q1 2024"
+}
+```
+
+</Accordion>
+
+---
+
+### `ledger_stats`
+Shows comprehensive statistics about the ledger file.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="ledger_stats - Request"
+{
+  "query": "string (optional) - Query pattern to filter statistics"
+}
+```
+
+**Response:**
+```json title="ledger_stats - Response"
+{
+  "success": true,
+  "statistics": {
+    "total_transactions": 523,
+    "date_range": "2020-01-01 to 2024-12-31",
+    "account_count": 45,
+    "payee_count": 78,
+    "commodity_count": 6
+  },
+  "file_info": {
+    "file_size": "125 KB",
+    "last_modified": "2024-01-15"
+  }
+}
+```
+
+</Accordion>
+
+## Budget and Analysis Tools
+
+### `ledger_budget`
+Shows budget analysis with variance reporting.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="ledger_budget - Request"
+{
+  "query": "string (optional) - Query pattern for budget analysis",
+  "date_range": "string (optional) - Date range for budget period",
+  "reporting_period": "string (optional) - Period grouping (monthly, quarterly, yearly)"
+}
+```
+
+**Response:**
+```json title="ledger_budget - Response"
+{
+  "success": true,
+  "budget_report": "Formatted budget vs actual analysis",
+  "period": "monthly",
+  "variance_summary": {
+    "over_budget": "$245.00",
+    "under_budget": "$156.00",
+    "categories_analyzed": 12
+  }
+}
+```
+
+</Accordion>
+
+---
+
+### `ledger_raw_command`
+Runs a raw Ledger CLI command for advanced functionality.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="ledger_raw_command - Request"
+{
+  "command_args": "array[string] (required) - Command arguments as list of strings (e.g., ['bal', '--depth', '2', 'Assets'])"
+}
+```
+
+**Response:**
+```json title="ledger_raw_command - Response"
+{
+  "success": true,
+  "command_output": "Raw output from Ledger CLI command",
+  "command_executed": "ledger bal --depth 2 Assets",
+  "exit_code": 0
+}
+```
+
+</Accordion>
+
+## Usage Examples
+
+### Personal Finance Analysis
+```python
+# Check account balances
+balances = call_tool("ledger_balance", {
+  "query": "Assets",
+  "date_range": "2024"
+})
+
+# Review spending patterns
+food_expenses = call_tool("ledger_register", {
+  "query": "Expenses:Food",
+  "date_range": "last 3 months"
+})
+
+# Get budget variance report
+budget_analysis = call_tool("ledger_budget", {
+  "query": "Expenses",
+  "date_range": "2024",
+  "reporting_period": "monthly"
+})
+```
+
+### Business Accounting Workflow
+```python
+# Generate income statement data
+revenue_accounts = call_tool("ledger_balance", {
+  "query": "Income",
+  "date_range": "2024"
+})
+
+expense_accounts = call_tool("ledger_balance", {
+  "query": "Expenses", 
+  "date_range": "2024"
+})
+
+# Analyze cash flow
+cash_flow = call_tool("ledger_register", {
+  "query": "Assets:Cash",
+  "date_range": "Q4 2024"
+})
+
+# Get detailed transaction data
+transactions = call_tool("ledger_print", {
+  "query": "tag:business",
+  "date_range": "2024"
+})
+```
+
+### Investment Portfolio Tracking
+```python
+# Track investment accounts
+investment_balances = call_tool("ledger_balance", {
+  "query": "Assets:Investments",
+  "date_range": "2024"
+})
+
+# Review investment transactions
+investment_history = call_tool("ledger_register", {
+  "query": "Assets:Investments:Stocks",
+  "date_range": "last year"
+})
+
+# Check portfolio commodities
+portfolio_assets = call_tool("ledger_commodities", {
+  "query": "AAPL|MSFT|GOOGL"
+})
+```
+
+### Advanced Reporting
+```python
+# Custom balance sheet depth
+balance_sheet = call_tool("ledger_raw_command", {
+  "command_args": ["bal", "--depth", "3", "Assets", "Liabilities"]
+})
+
+# Profit and loss statement
+pnl = call_tool("ledger_raw_command", {
+  "command_args": ["bal", "--period", "monthly", "Income", "Expenses"]
+})
+
+# Account statistics
+stats = call_tool("ledger_stats", {
+  "query": "2024"
+})
+```
+
+## Key Features
+
+- **Double-Entry Accounting**: Full support for professional double-entry bookkeeping
+- **Flexible Reporting**: Generate balance sheets, income statements, and custom reports
+- **Budget Analysis**: Track budget vs actual with variance reporting
+- **Multi-Currency Support**: Handle multiple currencies and commodities
+- **Powerful Querying**: Advanced filtering and searching capabilities
+- **Raw CLI Access**: Direct access to Ledger CLI for advanced operations
+- **Transaction Analysis**: Detailed transaction history and register views

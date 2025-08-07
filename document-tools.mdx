@@ -1,0 +1,252 @@
+---
+title: 'Document Processing Tools'
+description: 'Document reading and analysis tools for various file formats (PDF, TXT, DOCX, CSV, JSON)'
+---
+
+# 📄 Document Processing Tools
+
+Document reading and analysis tools for various file formats.
+
+## Document Reading Tools
+
+### `readDocument`
+Read and extract content from various document formats (PDF, TXT, DOCX, CSV, JSON).
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="readDocument - Request"
+{
+  "file_path": "string (required) - Path to the document file to read",
+  "extract_metadata": "boolean (default: true) - Whether to extract document metadata",
+  "max_chars": "integer (default: 50000) - Maximum characters to extract (for large documents)"
+}
+```
+
+**Response:**
+```json title="readDocument - Response"
+{
+  "success": true,
+  "content": "Document content extracted...",
+  "metadata": {
+    "file_type": "pdf",
+    "page_count": 10,
+    "file_size": 1024000,
+    "title": "Document Title"
+  },
+  "char_count": 25000
+}
+```
+
+</Accordion>
+
+---
+
+### `listWorkspaceDocuments`
+List all documents in the current workspace directory.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="listWorkspaceDocuments - Request"
+{
+  "workspace_path": "string (required) - Path to workspace directory",
+  "file_types": "array[string] (default: ['.pdf', '.txt', '.docx', '.csv', '.json']) - File extensions to include"
+}
+```
+
+**Response:**
+```json title="listWorkspaceDocuments - Response"
+{
+  "documents": [
+    {
+      "path": "/workspace/report.pdf",
+      "name": "report.pdf",
+      "size": 1024000,
+      "type": "pdf",
+      "modified": "2024-01-15T10:30:00Z"
+    }
+  ],
+  "total_count": 15
+}
+```
+
+</Accordion>
+
+---
+
+### `analyzeDocumentStructure`
+Analyze document structure and extract key information.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="analyzeDocumentStructure - Request"
+{
+  "file_path": "string (required) - Path to document file",
+  "analysis_type": "string (default: 'summary') - Type of analysis: summary/detailed/metadata_only"
+}
+```
+
+**Response:**
+```json title="analyzeDocumentStructure - Response"
+{
+  "analysis_type": "summary",
+  "structure": {
+    "sections": 5,
+    "tables": 3,
+    "images": 2,
+    "headings": ["Introduction", "Analysis", "Conclusion"]
+  },
+  "key_metrics": {
+    "word_count": 2500,
+    "page_count": 10,
+    "reading_time_minutes": 10
+  }
+}
+```
+
+</Accordion>
+
+## Supported File Formats
+
+### PDF Documents
+- **Extraction**: Text content, metadata, page count
+- **Features**: Full text search, table extraction, image detection
+- **Use Cases**: Financial reports, research papers, legal documents
+
+### Microsoft Word (DOCX)
+- **Extraction**: Text content, document structure, formatting metadata
+- **Features**: Heading detection, table extraction, embedded object analysis
+- **Use Cases**: Business reports, proposals, documentation
+
+### Text Files (TXT)
+- **Extraction**: Plain text content, encoding detection
+- **Features**: Character encoding handling, line count analysis
+- **Use Cases**: Log files, data exports, configuration files
+
+### CSV Files
+- **Extraction**: Structured data, column headers, row count
+- **Features**: Delimiter detection, data type inference
+- **Use Cases**: Financial data, survey results, database exports
+
+### JSON Files
+- **Extraction**: Structured data, schema analysis
+- **Features**: Nested structure analysis, data validation
+- **Use Cases**: API responses, configuration files, data exports
+
+## Usage Examples
+
+### Document Analysis Workflow
+```python
+# List available documents
+documents = call_tool("listWorkspaceDocuments", {
+  "workspace_path": "/workspace/documents"
+})
+
+# Read and analyze each document
+for doc in documents["documents"]:
+  # Extract content
+  content = call_tool("readDocument", {
+    "file_path": doc["path"],
+    "extract_metadata": True
+  })
+  
+  # Analyze structure
+  structure = call_tool("analyzeDocumentStructure", {
+    "file_path": doc["path"],
+    "analysis_type": "detailed"
+  })
+```
+
+### Research Document Processing
+```python
+# Read a research paper
+research_paper = call_tool("readDocument", {
+  "file_path": "/documents/market_analysis.pdf",
+  "extract_metadata": True,
+  "max_chars": 100000
+})
+
+# Analyze document structure
+paper_structure = call_tool("analyzeDocumentStructure", {
+  "file_path": "/documents/market_analysis.pdf",
+  "analysis_type": "detailed"
+})
+
+# Process financial data CSV
+financial_data = call_tool("readDocument", {
+  "file_path": "/data/quarterly_results.csv",
+  "extract_metadata": True
+})
+```
+
+### Batch Document Processing
+```python
+# Get all PDFs in workspace
+pdf_documents = call_tool("listWorkspaceDocuments", {
+  "workspace_path": "/reports",
+  "file_types": [".pdf"]
+})
+
+# Process each PDF
+processed_docs = []
+for doc in pdf_documents["documents"]:
+  content = call_tool("readDocument", {
+    "file_path": doc["path"],
+    "max_chars": 50000
+  })
+  
+  analysis = call_tool("analyzeDocumentStructure", {
+    "file_path": doc["path"],
+    "analysis_type": "summary"
+  })
+  
+  processed_docs.append({
+    "document": doc,
+    "content": content,
+    "analysis": analysis
+  })
+```
+
+### Configuration File Analysis
+```python
+# Read JSON configuration
+config = call_tool("readDocument", {
+  "file_path": "/config/app_settings.json",
+  "extract_metadata": True
+})
+
+# Analyze JSON structure
+config_structure = call_tool("analyzeDocumentStructure", {
+  "file_path": "/config/app_settings.json",
+  "analysis_type": "detailed"
+})
+```
+
+## Key Features
+
+- **Multi-Format Support**: Handle PDF, DOCX, TXT, CSV, and JSON files
+- **Metadata Extraction**: Get detailed file information including size, modification dates, and format-specific metadata
+- **Structure Analysis**: Understand document organization with section, table, and heading detection
+- **Content Limits**: Control extraction size for large documents to manage processing time
+- **Batch Processing**: List and process multiple documents in a workspace
+- **Encoding Detection**: Automatic handling of different text encodings
+- **Data Type Inference**: Smart analysis of structured data formats
+
+## Best Practices
+
+### Performance Optimization
+- Use `max_chars` parameter for large documents to limit processing time
+- Filter file types in `listWorkspaceDocuments` to focus on relevant documents
+- Use `metadata_only` analysis type when you only need file information
+
+### Error Handling
+- Check file paths before processing
+- Handle unsupported file formats gracefully
+- Validate document structure before detailed analysis
+
+### Security Considerations
+- Ensure proper file permissions for document access
+- Validate file paths to prevent directory traversal attacks
+- Be cautious with executable file formats

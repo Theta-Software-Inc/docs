@@ -1,0 +1,463 @@
+---
+title: 'Excel Tools'
+description: 'Professional Excel manipulation and automation tools for creating reports, charts, and data analysis'
+---
+
+# 📊 Excel Tools
+
+Professional Excel manipulation and automation tools for creating reports, charts, and data analysis.
+
+## Workbook Operations (5 tools)
+
+### `excel_create_workbook`
+Create new Excel workbooks with optional multiple sheets.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="excel_create_workbook - Request"
+{
+  "file_name": "string (required) - Name of the Excel file to create",
+  "sheets": "array[string] (optional) - List of sheet names, defaults to ['Sheet1']"
+}
+```
+
+**Response:**
+```json title="excel_create_workbook - Response"
+{
+  "status": "success",
+  "file_path": "/path/to/created/file.xlsx",
+  "sheets_created": ["Sheet1", "Sheet2"],
+  "message": "Workbook created successfully"
+}
+```
+
+</Accordion>
+
+---
+
+### `excel_get_workbook_info`
+Get metadata about an existing workbook including sheet names and properties.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="excel_get_workbook_info - Request"
+{
+  "file_name": "string (required) - Path to Excel file"
+}
+```
+
+**Response:**
+```json title="excel_get_workbook_info - Response"
+{
+  "file_name": "report.xlsx",
+  "sheet_names": ["Summary", "Data", "Charts"],
+  "named_ranges": ["SalesData", "Totals"],
+  "file_size": 1024000,
+  "last_modified": "2024-01-15T10:30:00Z"
+}
+```
+
+</Accordion>
+
+---
+
+### `excel_create_worksheet`
+Add new worksheets to existing workbooks.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="excel_create_worksheet - Request"
+{
+  "file_name": "string (required) - Path to Excel file",
+  "sheet_name": "string (required) - Name of new worksheet"
+}
+```
+
+</Accordion>
+
+---
+
+### `excel_copy_worksheet`
+Duplicate existing worksheets within the same workbook.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="excel_copy_worksheet - Request"
+{
+  "file_name": "string (required) - Path to Excel file",
+  "source_sheet": "string (required) - Name of sheet to copy",
+  "target_sheet": "string (required) - Name of new copied sheet"
+}
+```
+
+</Accordion>
+
+---
+
+### `excel_delete_worksheet`
+Remove worksheets from workbooks.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="excel_delete_worksheet - Request"
+{
+  "file_name": "string (required) - Path to Excel file",
+  "sheet_name": "string (required) - Name of sheet to delete"
+}
+```
+
+</Accordion>
+
+## Data Operations (4 tools)
+
+### `excel_read_data_from_excel`
+Read cell values and ranges from Excel sheets with validation metadata.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="excel_read_data_from_excel - Request"
+{
+  "file_name": "string (required) - Path to Excel file",
+  "sheet_name": "string (required) - Name of worksheet",
+  "start_cell": "string (default: 'A1') - Starting cell reference",
+  "end_cell": "string (optional) - Ending cell reference for range"
+}
+```
+
+**Response:**
+```json title="excel_read_data_from_excel - Response"
+{
+  "data": [
+    ["Name", "Age", "Salary"],
+    ["John Doe", 30, 50000],
+    ["Jane Smith", 25, 45000]
+  ],
+  "range": "A1:C3",
+  "cell_count": 9,
+  "has_headers": true
+}
+```
+
+</Accordion>
+
+---
+
+### `excel_write_data_to_excel`
+Write data arrays to Excel sheets starting from specified cell.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="excel_write_data_to_excel - Request"
+{
+  "file_name": "string (required) - Path to Excel file",
+  "sheet_name": "string (required) - Name of worksheet",
+  "data": "array[array] (required) - 2D array of data to write",
+  "start_cell": "string (default: 'A1') - Starting cell reference"
+}
+```
+
+**Response:**
+```json title="excel_write_data_to_excel - Response"
+{
+  "status": "success",
+  "rows_written": 100,
+  "columns_written": 5,
+  "range_affected": "A1:E100"
+}
+```
+
+</Accordion>
+
+---
+
+### `excel_apply_formula`
+Add Excel formulas to specific cells with validation.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="excel_apply_formula - Request"
+{
+  "file_name": "string (required) - Path to Excel file",
+  "sheet_name": "string (required) - Name of worksheet",
+  "cell": "string (required) - Cell reference (e.g., 'A1')",
+  "formula": "string (required) - Excel formula (e.g., '=SUM(A1:A10)')"
+}
+```
+
+</Accordion>
+
+---
+
+### `excel_validate_formula_syntax`
+Check formula validity before applying to cells.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="excel_validate_formula_syntax - Request"
+{
+  "formula": "string (required) - Excel formula to validate"
+}
+```
+
+**Response:**
+```json title="excel_validate_formula_syntax - Response"
+{
+  "is_valid": true,
+  "formula": "=SUM(A1:A10)",
+  "parsed_references": ["A1:A10"],
+  "function_used": ["SUM"]
+}
+```
+
+</Accordion>
+
+## Formatting & Styling (6 tools)
+
+### `excel_format_range`
+Apply comprehensive formatting to cell ranges including fonts, colors, borders, and number formats.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="excel_format_range - Request"
+{
+  "file_name": "string (required) - Path to Excel file",
+  "sheet_name": "string (required) - Name of worksheet",
+  "range": "string (required) - Cell range (e.g., 'A1:C10')",
+  "formatting": {
+    "font": {
+      "name": "string (optional) - Font name",
+      "size": "number (optional) - Font size",
+      "bold": "boolean (optional) - Bold text",
+      "italic": "boolean (optional) - Italic text",
+      "color": "string (optional) - Font color (hex)"
+    },
+    "fill": {
+      "color": "string (optional) - Background color (hex)"
+    },
+    "border": {
+      "style": "string (optional) - Border style",
+      "color": "string (optional) - Border color (hex)"
+    },
+    "alignment": {
+      "horizontal": "string (optional) - left/center/right",
+      "vertical": "string (optional) - top/center/bottom"
+    },
+    "number_format": "string (optional) - Number format code"
+  }
+}
+```
+
+</Accordion>
+
+---
+
+### `excel_merge_cells` / `excel_unmerge_cells`
+Merge or unmerge cell ranges for headers and layout.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="excel_merge_cells - Request"
+{
+  "file_name": "string (required) - Path to Excel file",
+  "sheet_name": "string (required) - Name of worksheet",
+  "range": "string (required) - Cell range to merge/unmerge"
+}
+```
+
+</Accordion>
+
+---
+
+### `excel_get_merged_cells`
+List all merged cell ranges in a worksheet.
+
+**Response:**
+```json title="excel_get_merged_cells - Response"
+{
+  "merged_ranges": ["A1:C1", "A5:B7"],
+  "count": 2
+}
+```
+
+---
+
+### `excel_copy_range`
+Copy cell ranges with formatting and formulas preserved.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="excel_copy_range - Request"
+{
+  "file_name": "string (required) - Path to Excel file",
+  "sheet_name": "string (required) - Name of worksheet",
+  "source_range": "string (required) - Source range to copy",
+  "destination_cell": "string (required) - Destination cell reference"
+}
+```
+
+</Accordion>
+
+---
+
+### `excel_delete_range`
+Delete cell ranges and shift remaining cells.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="excel_delete_range - Request"
+{
+  "file_name": "string (required) - Path to Excel file",
+  "sheet_name": "string (required) - Name of worksheet",
+  "range": "string (required) - Range to delete",
+  "shift": "string (optional) - 'up' or 'left' for shift direction"
+}
+```
+
+</Accordion>
+
+## Advanced Features (5 tools)
+
+### `excel_create_chart`
+Generate professional charts with extensive customization options.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="excel_create_chart - Request"
+{
+  "file_name": "string (required) - Path to Excel file",
+  "sheet_name": "string (required) - Name of worksheet",
+  "chart_type": "string (required) - Chart type: line/bar/pie/scatter/area",
+  "data_range": "string (required) - Data range for chart",
+  "title": "string (optional) - Chart title",
+  "chart_position": "string (optional) - Position cell reference"
+}
+```
+
+**Response:**
+```json title="excel_create_chart - Response"
+{
+  "status": "success",
+  "chart_id": "chart_001",
+  "chart_type": "line",
+  "position": "E2:M20",
+  "data_series": 3
+}
+```
+
+</Accordion>
+
+---
+
+### `excel_create_pivot_table`
+Create pivot tables for data analysis and aggregation.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="excel_create_pivot_table - Request"
+{
+  "file_name": "string (required) - Path to Excel file",
+  "sheet_name": "string (required) - Name of worksheet",
+  "data_range": "string (required) - Source data range",
+  "pivot_config": {
+    "rows": "array[string] - Row fields",
+    "columns": "array[string] - Column fields", 
+    "values": "array[object] - Value fields with aggregation",
+    "filters": "array[string] - Filter fields"
+  }
+}
+```
+
+</Accordion>
+
+---
+
+### `excel_create_table`
+Create native Excel tables with filtering and sorting capabilities.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="excel_create_table - Request"
+{
+  "file_name": "string (required) - Path to Excel file",
+  "sheet_name": "string (required) - Name of worksheet",
+  "data_range": "string (required) - Data range for table",
+  "table_name": "string (optional) - Name for the table",
+  "has_headers": "boolean (default: true) - Whether first row contains headers"
+}
+```
+
+</Accordion>
+
+---
+
+### `excel_validate_excel_range`
+Verify that cell range references are valid.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="excel_validate_excel_range - Request"
+{
+  "range": "string (required) - Range to validate (e.g., 'A1:C10')"
+}
+```
+
+</Accordion>
+
+---
+
+### `excel_get_data_validation_info`
+Extract data validation rules from cells.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="excel_get_data_validation_info - Request"
+{
+  "file_name": "string (required) - Path to Excel file",
+  "sheet_name": "string (required) - Name of worksheet",
+  "cell": "string (required) - Cell reference"
+}
+```
+
+</Accordion>
+
+## Usage Examples
+
+### Creating a Financial Report
+```python
+# Create workbook
+call_tool("excel_create_workbook", {"file_name": "financial_report.xlsx"})
+
+# Add data
+call_tool("excel_write_data_to_excel", {
+  "file_name": "financial_report.xlsx",
+  "sheet_name": "Sheet1",
+  "data": [["Q1", "Q2", "Q3", "Q4"], [1000, 1200, 1100, 1400]]
+})
+
+# Create chart
+call_tool("excel_create_chart", {
+  "file_name": "financial_report.xlsx",
+  "sheet_name": "Sheet1",
+  "chart_type": "line",
+  "data_range": "A1:E2",
+  "title": "Quarterly Revenue"
+})
+```

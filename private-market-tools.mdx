@@ -1,0 +1,177 @@
+---
+title: 'Private Market Tools'
+description: 'Private company data and funding information via Crunchbase API'
+---
+
+# 🏢 Private Market Tools
+
+Private company data and funding information via Crunchbase API.
+
+## Company Research Tools
+
+### `getCrunchbaseCompanyInfo`
+Get detailed company information from Crunchbase including name, description, funding, location, social networks, and more.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="getCrunchbaseCompanyInfo - Request"
+{
+  "company": "string (optional) - Company name or identifier (e.g., 'openai', 'google', 'microsoft'). Either company or domain must be provided.",
+  "domain": "string (optional) - Company domain/website (e.g., 'openai.com', 'google.com', 'darwingov.com'). Either company or domain must be provided."
+}
+```
+
+**Response:**
+```json title="getCrunchbaseCompanyInfo - Response"
+{
+  "success": true,
+  "data": {
+    "basic_info": {
+      "name": "Darwin AI",
+      "uuid": "2f703326-93b0-4dad-9a13-c4bc6799e3e5",
+      "permalink": "darwin-ai-e3e5",
+      "website": "https://darwingov.com",
+      "founded": "2024-05-20",
+      "headline": "GenAI Adoption and GRC platform for state and local government agencies.",
+      "description": "...",
+      "operating_status": "active",
+      "company_type": "for profit",
+      "employee_count": "1-10"
+    },
+    "location": [
+      {
+        "name": "Las Vegas",
+        "type": "city"
+      }
+    ],
+    "categories": [
+      {
+        "name": "Generative AI",
+        "permalink": "generative-ai"
+      }
+    ],
+    "funding_summary": {
+      "funding_total": {
+        "value": 5000000,
+        "currency": "USD"
+      },
+      "num_funding_rounds": 1
+    },
+    "social_networks": [
+      {
+        "name": "linkedin",
+        "url": "https://www.linkedin.com/company/darwin-gov-ai/"
+      }
+    ]
+  }
+}
+```
+
+</Accordion>
+
+---
+
+### `getCrunchbaseFundingRounds`
+Get funding round information from Crunchbase with filtering options.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="getCrunchbaseFundingRounds - Request"
+{
+  "days_since_announcement": "integer (optional) - Number of days since funding announcement (1-360 days), default: 30",
+  "investment_type": "string (optional) - Type of investment. Options: pre_seed, seed, series_a, series_b, series_c, etc.",
+  "investor_identifiers": "string (optional) - UUID of specific investor to filter by"
+}
+```
+
+**Response:**
+```json title="getCrunchbaseFundingRounds - Response"
+{
+  "success": true,
+  "data": {
+    "total_results": 1,
+    "funding_rounds": [
+      {
+        "uuid": "565ec15e-4779-4dfd-878d-5ac112c62c85",
+        "round_name": "Seed Round - Darwin AI",
+        "company": {
+          "name": "Darwin AI",
+          "uuid": "2f703326-93b0-4dad-9a13-c4bc6799e3e5"
+        },
+        "announced_date": "2025-03-12",
+        "investment_type": "seed",
+        "money_raised": {
+          "value": 5000000,
+          "currency": "USD"
+        },
+        "investors": [
+          {
+            "name": "Resolute Ventures",
+            "uuid": "d0a6043b-7164-af60-1063-e3314c6d9d95",
+            "role": "investor"
+          },
+          {
+            "name": "UpWest",
+            "uuid": "a7d96886-7467-ce1a-db6c-06b293e26ed1",
+            "role": "investor"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+</Accordion>
+
+## Usage Examples
+
+### Company Research Workflow
+```python
+# Research a company by name
+company_info = call_tool("getCrunchbaseCompanyInfo", {
+  "company": "openai"
+})
+
+# Research a company by domain
+company_by_domain = call_tool("getCrunchbaseCompanyInfo", {
+  "domain": "darwingov.com"
+})
+
+# Find recent seed funding rounds
+recent_seed_rounds = call_tool("getCrunchbaseFundingRounds", {
+  "investment_type": "seed",
+  "days_since_announcement": 30
+})
+
+# Find all Series A rounds in the last 60 days
+series_a_rounds = call_tool("getCrunchbaseFundingRounds", {
+  "investment_type": "series_a",
+  "days_since_announcement": 60
+})
+```
+
+### Market Intelligence Analysis
+```python
+# Analyze funding trends
+recent_rounds = call_tool("getCrunchbaseFundingRounds", {
+  "days_since_announcement": 90
+})
+
+# Research specific companies in a sector
+ai_companies = [
+  call_tool("getCrunchbaseCompanyInfo", {"company": "openai"}),
+  call_tool("getCrunchbaseCompanyInfo", {"company": "anthropic"}),
+  call_tool("getCrunchbaseCompanyInfo", {"company": "cohere"})
+]
+```
+
+## Key Features
+
+- **Comprehensive Company Profiles**: Access detailed information about private companies including funding history, team size, and business description
+- **Real-Time Funding Data**: Track recent funding rounds with filtering by investment type and timeframe  
+- **Investor Intelligence**: Identify key investors and funding patterns in specific sectors
+- **Flexible Search**: Search by company name or domain for maximum flexibility
+- **Rich Metadata**: Get location, category, social network, and operational status information
