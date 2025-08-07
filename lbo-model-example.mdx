@@ -11,7 +11,16 @@ Firstly, even though the line items in the FCF are listed in chronological order
 
 ![LBO Model FCF Projection](/images/LBO-1.png)
 
+Secondly, this task requires the agent to exercise significant domain knowledge about debt structures. We can see this through an excerpt from our assumptions document:
+
 ![LBO Financing Details](/images/LBO-2.png)
 
-The agent must understand the interdependencies between different sections of the LBO model and execute calculations in the proper sequence to arrive at the correct financial projections.
-
+Thirdly, the agent has to make multiple intricate choices about how to properly use the available
+tools. For the agent to find the correct federal interest rate, it needs to correctly enter proper date
+ranges. Interest rate data is only released on the first of each month - if the agent doesn’t include
+this date in its range, it will not get the correct results. For finding the exit multiple, before the
+agent makes a call to the appropriate tool, the agent needs to identify that the EV/EBITDA
+multiple should be used and identify the correct ticker symbols for the specified companies.
+ 
+When the agent is completed with its work, we evaluate the agent’s resulting file against our
+golden Excel sheet.

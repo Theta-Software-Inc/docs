@@ -12,7 +12,7 @@ The agent first needs to find an ideal plot of land. We provide the agent with a
 
 Once the agent finds the correct property, it needs to examine our provided assumptions and then fill in the model.
 
-![Real Estate Model Overview](/images/RE-1.png)
+![Real Estate Model Overview](/images/real-estate.jpg)
 
 ![Completed Model with Costs](/images/RE-2.png)
 *Completed version of the model with filled in hard costs and soft costs.*
@@ -27,51 +27,3 @@ The Assumptions table is provided both in the PDF and as its own Excel file. The
 
 When the agent is completed with its work, we evaluate the agent's resulting file against our golden Excel sheet.
 
-## Key Challenges
-
-### Property Search and Filtering
-- **Complex Specifications**: Budget constraints, minimum square footage, and agent requirements
-- **Real-Time Data**: Filtering through live property listings using real estate tools
-- **Multi-Criteria Matching**: Finding properties that meet all specified criteria simultaneously
-
-### Financial Model Completion
-- **Document Analysis**: Interpreting assumptions from both PDF and Excel formats
-- **Unit Type Aggregation**: Combining numbers across units of the same type
-- **Data Integration**: Linking retrieved square-foot data with assumption tables
-- **Cost Categorization**: Properly filling in hard costs and soft costs sections
-
-### Technical Requirements
-
-The agent must:
-
-1. **Execute Property Search** - Use real estate tools with complex filtering criteria
-2. **Parse Multiple Documents** - Extract assumptions from PDF and Excel files
-3. **Aggregate Unit Data** - Combine costs and specifications by unit type
-4. **Cross-Reference Data** - Match property data with assumption requirements
-5. **Complete Financial Model** - Fill in all cost categories with accurate projections
-
-## Autonomous Execution Flow
-
-**Task:** "Find a suitable property and complete the real estate development model"
-
-```python
-# Agent utilizes our tools to complete real estate modeling task:
-steps = [
-    {"tool": "getSaleListings", 
-     "args": {"priceMax": 2000000, "squareFootage": 5000, "propertyType": "Land"}},
-    
-    {"tool": "getPropertyById", 
-     "args": {"propertyId": "selected_property_id"}},
-    
-    {"tool": "excel_read_data_from_excel", 
-     "args": {"file_name": "assumptions.xlsx", "sheet_name": "Unit_Types"}},
-    
-    {"tool": "excel_write_data_to_excel", 
-     "args": {"file_name": "real_estate_model.xlsx", "data": "[[Hard_Costs, 1250000], [Soft_Costs, 450000], ...]"}},
-
-    {"tool": "excel_apply_formula", 
-     "args": {"formula": "=SUM(B2:B15)", "cell": "B16"}}
-]
-```
-
-**Result + Scoring:** End state excel file with completed real estate development model for us to score using our evaluators.

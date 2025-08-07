@@ -1,12 +1,12 @@
 ---
-title: 'Theta Playground Gateway - MCP Environments'
+title: 'Theta - MCP Environments'
 description: 'Understanding and working with Model Context Protocol (MCP) environments in the Theta Playground Gateway'
 ---
 
 
 ## Overview
 
-The **Theta Playground Gateway** is our environment that allows agents to complete tasks using our MCP tools in an isolated environment. We then evaluate the model's success in completing the task.
+The **Theta Playground** is our environment that allows agents to complete tasks using our MCP tools in an isolated environment. We then evaluate the model's success in completing the task.
 
 ## Quick Start
 
@@ -19,16 +19,21 @@ curl -N -X POST "https://playground.thetasoftware.ai/agent/tasks/{taskID}/execut
   -H "Authorization: Bearer $THETA_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "model": "gpt-4.1", # insert model here
+    "model": "gpt-4.1", # insert model-> 4o, 4o-mini, gpt-4.1, gpt4.1-mini, o1, o3, o3-pro, o3-mini
     "max_steps": 30,
     "openai_api_key": "'$OPENAI_API_KEY'"
   }'
 ```
-
 This will:
 1. Create an isolated workspace for the AI agent with the initstate of the task
 2. Stream real-time actions as the model uses the tools to complete the task
 3. Return and score
+
+**Available Task IDs:**
+- `calendarization` - Complex quarterly financial data calendarization task
+- `lbo2-mcp` - LBO model completion with debt schedule calculations  
+- `re_model_ut` - Real estate property search and financial modeling
+- `vc_darwin` - Venture capital funding structure analysis
 
 ### 2. Watch Real-Time Execution
 
@@ -56,15 +61,11 @@ The Theta Gateway provides access to **65+ professional tools** across six main 
 | **Document Processing** | 3 tools | Read and analyze various document formats | [Document Tools →](/document-tools) |
 
 
-## Task Examples
 
-The Theta MCP environment excels at complex financial analysis tasks. See our detailed examples in the Task Examples section for sophisticated scenarios including [LBO Calendarization](/calendarization-example), [LBO Model Completion](/lbo-model-example), [Real Estate Model](/real-estate-model-example), and [Venture Capital Analysis](/venture-capital-example).
 
-### Available MCP Endpoints
+## Evaluation
+Evaluating the agent’s ability to complete the task is a critical component of the learning process. We assess the final state of the environment and assign a score based on how effectively the agent accomplished the task. For example, in the Real Estate Model task, we evaluate the accuracy of the agent’s inputs and return a score on a scale from 0.00 to 1.00, reflecting how closely the model matches the expected outcome.
 
-- **Standard JSON-RPC:** `https://playground.thetasoftware.ai/mcp`
-- **Streaming (Preferred):** `https://playground.thetasoftware.ai/mcp/streamable`
-- **Health Check:** `https://playground.thetasoftware.ai/mcp/health`
 
 ## Authentication & Setup
 

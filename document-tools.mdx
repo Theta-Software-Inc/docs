@@ -220,30 +220,3 @@ config_structure = call_tool("analyzeDocumentStructure", {
   "analysis_type": "detailed"
 })
 ```
-
-## Key Features
-
-- **Multi-Format Support**: Handle PDF, DOCX, TXT, CSV, and JSON files
-- **Metadata Extraction**: Get detailed file information including size, modification dates, and format-specific metadata
-- **Structure Analysis**: Understand document organization with section, table, and heading detection
-- **Content Limits**: Control extraction size for large documents to manage processing time
-- **Batch Processing**: List and process multiple documents in a workspace
-- **Encoding Detection**: Automatic handling of different text encodings
-- **Data Type Inference**: Smart analysis of structured data formats
-
-## Best Practices
-
-### Performance Optimization
-- Use `max_chars` parameter for large documents to limit processing time
-- Filter file types in `listWorkspaceDocuments` to focus on relevant documents
-- Use `metadata_only` analysis type when you only need file information
-
-### Error Handling
-- Check file paths before processing
-- Handle unsupported file formats gracefully
-- Validate document structure before detailed analysis
-
-### Security Considerations
-- Ensure proper file permissions for document access
-- Validate file paths to prevent directory traversal attacks
-- Be cautious with executable file formats
