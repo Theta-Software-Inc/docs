@@ -16,7 +16,6 @@
           {
             "group": "Get Started",
             "pages": [
-              "index",
               "mcp-environments"
             ]
           },
@@ -29,6 +28,15 @@
               "real-estate-tools",
               "accounting-tools",
               "document-tools"
+            ]
+          },
+          {
+            "group": "Task Examples",
+            "pages": [
+              "calendarization-example",
+              "lbo-model-example",
+              "real-estate-model-example",
+              "venture-capital-example"
             ]
           }
         ]

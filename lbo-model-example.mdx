@@ -1,0 +1,17 @@
+---
+title: 'LBO Model'
+description: 'Complex financial modeling task requiring sequential debt schedule calculations and interdependent cash flow analysis'
+---
+
+*Task ID: lbo2-mcp*
+
+The agent is provided with assumptions and a partially completed LBO model. This task is particularly complex for a number of reasons:
+
+Firstly, even though the line items in the FCF are listed in chronological order, the agent needs to first complete the debt schedule before it can calculate the interest and mandatory amortization. Trying to complete this process in a different order will lead the agent to the wrong answer.
+
+![LBO Model FCF Projection](/images/LBO-1.png)
+
+![LBO Financing Details](/images/LBO-2.png)
+
+The agent must understand the interdependencies between different sections of the LBO model and execute calculations in the proper sequence to arrive at the correct financial projections.
+

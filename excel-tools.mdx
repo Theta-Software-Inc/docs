@@ -3,115 +3,7 @@ title: 'Excel Tools'
 description: 'Professional Excel manipulation and automation tools for creating reports, charts, and data analysis'
 ---
 
-# 📊 Excel Tools
 
-Professional Excel manipulation and automation tools for creating reports, charts, and data analysis.
-
-## Workbook Operations (5 tools)
-
-### `excel_create_workbook`
-Create new Excel workbooks with optional multiple sheets.
-
-<Accordion title="View Parameters & Response">
-
-**Parameters:**
-```json title="excel_create_workbook - Request"
-{
-  "file_name": "string (required) - Name of the Excel file to create",
-  "sheets": "array[string] (optional) - List of sheet names, defaults to ['Sheet1']"
-}
-```
-
-**Response:**
-```json title="excel_create_workbook - Response"
-{
-  "status": "success",
-  "file_path": "/path/to/created/file.xlsx",
-  "sheets_created": ["Sheet1", "Sheet2"],
-  "message": "Workbook created successfully"
-}
-```
-
-</Accordion>
-
----
-
-### `excel_get_workbook_info`
-Get metadata about an existing workbook including sheet names and properties.
-
-<Accordion title="View Parameters & Response">
-
-**Parameters:**
-```json title="excel_get_workbook_info - Request"
-{
-  "file_name": "string (required) - Path to Excel file"
-}
-```
-
-**Response:**
-```json title="excel_get_workbook_info - Response"
-{
-  "file_name": "report.xlsx",
-  "sheet_names": ["Summary", "Data", "Charts"],
-  "named_ranges": ["SalesData", "Totals"],
-  "file_size": 1024000,
-  "last_modified": "2024-01-15T10:30:00Z"
-}
-```
-
-</Accordion>
-
----
-
-### `excel_create_worksheet`
-Add new worksheets to existing workbooks.
-
-<Accordion title="View Parameters & Response">
-
-**Parameters:**
-```json title="excel_create_worksheet - Request"
-{
-  "file_name": "string (required) - Path to Excel file",
-  "sheet_name": "string (required) - Name of new worksheet"
-}
-```
-
-</Accordion>
-
----
-
-### `excel_copy_worksheet`
-Duplicate existing worksheets within the same workbook.
-
-<Accordion title="View Parameters & Response">
-
-**Parameters:**
-```json title="excel_copy_worksheet - Request"
-{
-  "file_name": "string (required) - Path to Excel file",
-  "source_sheet": "string (required) - Name of sheet to copy",
-  "target_sheet": "string (required) - Name of new copied sheet"
-}
-```
-
-</Accordion>
-
----
-
-### `excel_delete_worksheet`
-Remove worksheets from workbooks.
-
-<Accordion title="View Parameters & Response">
-
-**Parameters:**
-```json title="excel_delete_worksheet - Request"
-{
-  "file_name": "string (required) - Path to Excel file",
-  "sheet_name": "string (required) - Name of sheet to delete"
-}
-```
-
-</Accordion>
 
 ## Data Operations (4 tools)
 
@@ -323,6 +215,112 @@ Delete cell ranges and shift remaining cells.
   "sheet_name": "string (required) - Name of worksheet",
   "range": "string (required) - Range to delete",
   "shift": "string (optional) - 'up' or 'left' for shift direction"
+}
+```
+
+</Accordion>
+
+## Workbook Operations (5 tools)
+
+### `excel_create_workbook`
+Create new Excel workbooks with optional multiple sheets.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="excel_create_workbook - Request"
+{
+  "file_name": "string (required) - Name of the Excel file to create",
+  "sheets": "array[string] (optional) - List of sheet names, defaults to ['Sheet1']"
+}
+```
+
+**Response:**
+```json title="excel_create_workbook - Response"
+{
+  "status": "success",
+  "file_path": "/path/to/created/file.xlsx",
+  "sheets_created": ["Sheet1", "Sheet2"],
+  "message": "Workbook created successfully"
+}
+```
+
+</Accordion>
+
+---
+
+### `excel_get_workbook_info`
+Get metadata about an existing workbook including sheet names and properties.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="excel_get_workbook_info - Request"
+{
+  "file_name": "string (required) - Path to Excel file"
+}
+```
+
+**Response:**
+```json title="excel_get_workbook_info - Response"
+{
+  "file_name": "report.xlsx",
+  "sheet_names": ["Summary", "Data", "Charts"],
+  "named_ranges": ["SalesData", "Totals"],
+  "file_size": 1024000,
+  "last_modified": "2024-01-15T10:30:00Z"
+}
+```
+
+</Accordion>
+
+---
+
+### `excel_create_worksheet`
+Add new worksheets to existing workbooks.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="excel_create_worksheet - Request"
+{
+  "file_name": "string (required) - Path to Excel file",
+  "sheet_name": "string (required) - Name of new worksheet"
+}
+```
+
+</Accordion>
+
+---
+
+### `excel_copy_worksheet`
+Duplicate existing worksheets within the same workbook.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="excel_copy_worksheet - Request"
+{
+  "file_name": "string (required) - Path to Excel file",
+  "source_sheet": "string (required) - Name of sheet to copy",
+  "target_sheet": "string (required) - Name of new copied sheet"
+}
+```
+
+</Accordion>
+
+---
+
+### `excel_delete_worksheet`
+Remove worksheets from workbooks.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="excel_delete_worksheet - Request"
+{
+  "file_name": "string (required) - Path to Excel file",
+  "sheet_name": "string (required) - Name of sheet to delete"
 }
 ```
 

@@ -1,9 +1,8 @@
 ---
-title: 'MCP Environments'
+title: 'Theta Playground Gateway - MCP Environments'
 description: 'Understanding and working with Model Context Protocol (MCP) environments in the Theta Playground Gateway'
 ---
 
-# Theta Playground Gateway - MCP Environments
 
 ## Overview
 
@@ -16,13 +15,13 @@ The **Theta Playground Gateway** is our environment that allows agents to comple
 Start a streaming financial analysis task:
 
 ```bash
-curl -X POST "https://playground.thetasoftware.ai/agent/tasks/{task_id}/execute/stream" \
+curl -N -X POST "https://playground.thetasoftware.ai/agent/tasks/{taskID}/execute/stream" \
+  -H "Authorization: Bearer $THETA_API_KEY" \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer theta_YOUR_API_KEY" \
   -d '{
-    "model": "gpt-4o", # choose your own model
-    "max_steps": 20,
-    "openai_api_key": "YOUR_OPENAI_API_KEY"
+    "model": "gpt-4.1", # insert model here
+    "max_steps": 30,
+    "openai_api_key": "'$OPENAI_API_KEY'"
   }'
 ```
 
@@ -38,9 +37,9 @@ Example streaming response shows each step:
 data: {"type": "tool_call", "step": 1, "tool_name": "finance_get_income_statements", "arguments": {"ticker": "WMT", "period": "quarterly", "limit": 4}}
 data: {"type": "tool_call", "step": 2, "tool_name": "finance_get_balance_sheets", "arguments": {"ticker": "WMT", "period": "quarterly", "limit": 4}}
 data: {"type": "tool_call", "step": 3, "tool_name": "excel_create_workbook", "arguments": {"filepath": "Walmart_Calendarized_Financials.xlsx"}}
-
 ...
-data: {"type": "execution_completed", "steps_executed": 7}
+data: {"type": "execution_completed", "steps_executed": 9, "score": 0.0}
+
 ```
 
 ## Available Tools
@@ -56,87 +55,10 @@ The Theta Gateway provides access to **65+ professional tools** across six main 
 | **Accounting** | 9 tools | Double-entry accounting system via Ledger CLI | [Accounting Tools →](/accounting-tools) |
 | **Document Processing** | 3 tools | Read and analyze various document formats | [Document Tools →](/document-tools) |
 
-## Quick Start Examples
 
-### Excel Automation
-```python
-# Create a financial report
-call_tool("excel_create_workbook", {"file_name": "report.xlsx"})
-call_tool("excel_write_data_to_excel", {
-  "file_name": "report.xlsx", 
-  "sheet_name": "Sheet1",
-  "data": [["Q1", "Q2", "Q3"], [1000, 1200, 1100]]
-})
-call_tool("excel_create_chart", {
-  "file_name": "report.xlsx",
-  "chart_type": "line", 
-  "data_range": "A1:C2"
-})
-```
+## Task Examples
 
-### Real Estate Analysis
-```python
-# Find investment properties
-properties = call_tool("getPropertyRecords", {
-  "city": "Austin", "state": "TX", "maxPrice": 500000
-})
-
-# Get market analysis
-market_stats = call_tool("getMarketStatistics", {"zipCode": "78701"})
-
-# Compare multiple markets
-comparison = call_tool("compareMarkets", {
-  "zipCodes": ["78701", "78702", "78703"]
-})
-```
-
-### Financial Data
-```python
-# Get stock data
-price = call_tool("getPriceSnapshot", {"ticker": "AAPL"})
-financials = call_tool("getFinancials", {"ticker": "AAPL"})
-ratios = call_tool("getFinancialRatios", {"ticker": "AAPL"})
-```
-
-### Construction Costs
-```python
-# Get material and labor costs
-materials = call_tool("searchSources", {
-  "search_term": "concrete", "state": "Texas", "county": "Travis"
-})
-
-labor = call_tool("getLaborRates", {
-  "trade": "electrician", "state": "Texas", "county": "Travis"
-})
-```
-
-## Task Example: LBO Financial Calendarization
-
-**Calendarization** transforms quarterly financial data to align with different fiscal periods. For example, converting a company's fiscal quarters (which might run Feb-Apr, May-Jul, Aug-Oct, Nov-Jan) into calendar year periods (Jan-Mar, Apr-Jun, Jul-Sep, Oct-Dec).
-
-### Autonomous Execution Example
-
-**Task:** "Calendarize Walmart's quarterly data from October 1, 2023 to September 30, 2024"
-
-**Example Execution Flow:**
-```python
-#  agent utilizes our tools to complete task:
-steps = [
-    {"tool": "getFinancials", 
-     "args": {"ticker": "WMT", "period": "quarterly", "limit": 4}},
-    
-    {"tool": "excel_create_workbook", 
-     "args": {"file_name": "Walmart_Calendarized_Financials.xlsx"}},
-    
-    {"tool": "excel_write_data_to_excel", 
-     "args": {"data": "[[Revenue, 508075], [Cost of Sales, 381440], ...]"}},
-
-    {"tool": "excel_format_range", 
-     "args": {"formatting": {"number_format": "$#,##0"}}}
-]
-```
-
-**Result + Scoring:** End state excel file with calendarized financial data for us to score using our evaluators.
+The Theta MCP environment excels at complex financial analysis tasks. See our detailed examples in the Task Examples section for sophisticated scenarios including [LBO Calendarization](/calendarization-example), [LBO Model Completion](/lbo-model-example), [Real Estate Model](/real-estate-model-example), and [Venture Capital Analysis](/venture-capital-example).
 
 ### Available MCP Endpoints
 

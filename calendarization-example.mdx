@@ -1,0 +1,16 @@
+---
+title: 'Calendarization'
+description: 'Complex quarterly financial data calendarization task requiring cross-referencing multiple SEC filings'
+---
+
+*Task ID: calendarization*
+
+This task requires the agent to calendarize financial data for Walmart on a quarterly basis. This means that the agent has to calculate figures for the most recent 12 month period instead of just using the numbers available from the company's most recent fiscal year. The agent has access to a tool to get quarterly and annual filings for any company. It needs to select the correct statements and then parse through the long documents to find the correct values.
+
+Quarterly calendarization is an unintuitive process for the agent. Walmart's fiscal year starts in February and ends the following January. The agent is provided with the information that today is October 1st of 2024. This means that the agent can't just use clean cutoffs for quarterly data. It needs to retrieve one month of data from Q2 of FY 2023, and two months of data from Q3 of FY 2024 (already provided). Some of the financial statements also make it difficult for the agent to deduce figures for a given quarter:
+
+![Calendar Analysis Example](/images/Calendar-1.png)
+
+For example, in the above image, we don't directly have data for the 3 month change in revenue that would represent Q4. We only have data for the whole fiscal year. This means the agent needs to cross-reference the revenue number in this 10-K with the nine-month number available from the Q3 10-Q and then calculate the difference between the two. Also, the agent needs to recognize that 10-Q statements title columns by calendar months in a year, while the 10-K statements title columns by the fiscal year.
+
+When the agent is completed with its work, we evaluate the agent's resulting file against our golden Excel sheet.

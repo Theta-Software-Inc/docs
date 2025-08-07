@@ -1,0 +1,97 @@
+---
+title: 'Venture Capital Analysis'
+description: 'Complex funding structure analysis requiring sequential API calls and cascading data dependencies across multiple investment rounds'
+---
+
+# Venture Capital Analysis
+*Task ID: vc_darwin*
+
+For this task, the agent has to fill out a set of increasingly complex tables in Excel corresponding to funding structures for each investment round. The sequential nature of the data means that each set of data points has a cascading effect - the agent won't be able to properly reach the correct values in later funding rounds without setting up a proper structure for the initial funding rounds.
+
+Here is an image of one such completed table in the sheet:
+
+![Venture Capital Exit Analysis](/images/VC-1.png)
+
+The agent needs to use the Company Info Crunchbase function to access the size of the seed round, and then the agent needs to use the Crunchbase Funding Rounds function to access data on specific investors in the seed round. The second Crunchbase function requires the agent to provide a company uuid as a parameter - the agent will not be able to find this information without correctly calling the first Crunchbase function.
+
+When the agent is completed with its work, we evaluate the agent's resulting file against our golden Excel sheet.
+
+## Key Challenges
+
+### Sequential API Dependencies
+- **Two-Step Process**: Company Info → Funding Rounds data retrieval
+- **UUID Requirement**: Second API call requires company uuid from first call
+- **Data Chain**: Cannot access investor details without proper company identification
+
+### Cascading Data Effects
+- **Round Interdependencies**: Later funding rounds depend on earlier round structures
+- **Ownership Calculations**: Dilution effects across multiple investment rounds
+- **Liquidation Preferences**: Complex waterfall calculations with investor preferences
+
+### Complex Financial Modeling
+- **Exit Analysis**: Liquidation preference calculations and investor returns
+- **Ownership Dilution**: Tracking equity changes across funding rounds
+- **MOIC Calculations**: Multiple on invested capital for different investor classes
+- **Conversion Thresholds**: Understanding when preferred shares convert to common
+
+## Technical Requirements
+
+The agent must:
+
+1. **Execute Sequential API Calls**
+   - Call `getCompanyInfo` to retrieve company details and uuid
+   - Use uuid to call `getFundingRounds` for detailed investor information
+
+2. **Process Investment Round Data**
+   - Extract seed round size and investor details
+   - Calculate ownership percentages for each investor class
+   - Determine liquidation preferences and conversion thresholds
+
+3. **Build Cascading Excel Model**
+   - Structure initial funding round data correctly
+   - Calculate dilution effects on subsequent rounds
+   - Complete exit analysis with proper waterfall calculations
+
+4. **Handle Complex Calculations**
+   - Exit equity value distributions
+   - Liquidation preference waterfalls
+   - MOIC (Multiple on Invested Capital) for each investor class
+
+## Autonomous Execution Flow
+
+**Task:** "Analyze funding structure and complete exit analysis for Darwin company"
+
+```python
+# Agent utilizes our tools to complete venture capital analysis:
+steps = [
+    {"tool": "getCompanyInfo", 
+     "args": {"company_name": "Darwin"}},
+    
+    {"tool": "getFundingRounds", 
+     "args": {"company_uuid": "retrieved_uuid_from_step1"}},
+    
+    {"tool": "excel_create_workbook", 
+     "args": {"file_name": "Darwin_VC_Analysis.xlsx"}},
+    
+    {"tool": "excel_write_data_to_excel", 
+     "args": {"file_name": "Darwin_VC_Analysis.xlsx", "data": "[[Seed Investors, 5000000, 5000000, 23.91%], [Series A Investors, 15000000, 15000000, 13.04%], ...]"}},
+
+    {"tool": "excel_apply_formula", 
+     "args": {"formula": "=B3*D3", "cell": "E3"}},
+     
+    {"tool": "excel_format_range", 
+     "args": {"formatting": {"number_format": "$#,##0"}}}
+]
+```
+
+## Data Flow Example
+
+From the completed analysis shown above:
+
+- **Exit Equity Value**: $500,000,000
+- **Seed Investors**: 23.91% ownership, $119.5M exit proceeds, 23.9x MOIC
+- **Series A Investors**: 13.04% ownership, $65.2M exit proceeds, 4.3x MOIC  
+- **Common Shareholders**: 63.04% ownership, $315.2M exit proceeds
+- **Total MOIC**: 9.24x across all investor classes
+
+**Result + Scoring:** End state excel file with completed venture capital analysis for us to score using our evaluators.
