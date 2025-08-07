@@ -1,0 +1,1820 @@
+---
+title: 'MCP Environments'
+description: 'Understanding and working with Model Context Protocol (MCP) environments in the Theta Playground Gateway'
+---
+
+# Theta Playground Gateway - MCP Environments
+
+## Overview
+
+The **Theta Playground Gateway** is our environment that allows agents to complete tasks using our MCP tools in an isolated environment. We then evaluate the model's success in completing the task.
+
+## Quick Start
+
+### 1. Execute an Autonomous Task
+
+Start a streaming financial analysis task:
+
+```bash
+curl -X POST "https://playground.thetasoftware.ai/agent/tasks/{task_id}/execute/stream" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer theta_YOUR_API_KEY" \
+  -d '{
+    "model": "gpt-4o", # choose your own model
+    "max_steps": 20,
+    "openai_api_key": "YOUR_OPENAI_API_KEY"
+  }'
+```
+
+This will:
+1. Create an isolated workspace for the AI agent with the initstate of the task
+2. Stream real-time actions as the model uses the tools to complete the task
+3. Return and score
+
+### 2. Watch Real-Time Execution
+
+Example streaming response shows each step:
+```json
+data: {"type": "tool_call", "step": 1, "tool_name": "finance_get_income_statements", "arguments": {"ticker": "WMT", "period": "quarterly", "limit": 4}}
+data: {"type": "tool_call", "step": 2, "tool_name": "finance_get_balance_sheets", "arguments": {"ticker": "WMT", "period": "quarterly", "limit": 4}}
+data: {"type": "tool_call", "step": 3, "tool_name": "excel_create_workbook", "arguments": {"filepath": "Walmart_Calendarized_Financials.xlsx"}}
+
+...
+data: {"type": "execution_completed", "steps_executed": 7}
+```
+
+## Available Tools
+
+The Theta Gateway provides access to **50+ professional tools** across four main categories. All tools use clean, intuitive names without client prefixes.
+
+| Category | Tools | Description |
+|----------|-------|-------------|
+| **Excel** | 20+ tools | Create, manipulate, and analyze Excel workbooks |
+| **Finance** | 15+ tools | Real-time financial data from markets and companies |
+| **Material Costs** | 6 tools | Construction cost data and material pricing |
+| **Property Data** | 13 tools | Property data, valuations, and market analysis (140+ million properties) |
+
+### 📊 Excel Tools (20+ tools)
+
+Professional Excel manipulation and automation tools for creating reports, charts, and data analysis.
+
+#### Workbook Operations (5 tools)
+
+---
+
+### `excel_create_workbook`
+
+Create new Excel workbooks with optional multiple sheets.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="excel_create_workbook - Request"
+{
+  "file_name": "string (required) - Name of the Excel file to create",
+  "sheets": "array[string] (optional) - List of sheet names, defaults to ['Sheet1']"
+}
+```
+
+**Response:**
+```json title="excel_create_workbook - Response"
+{
+  "status": "success",
+  "file_path": "/path/to/created/file.xlsx",
+  "sheets_created": ["Sheet1", "Sheet2"],
+  "message": "Workbook created successfully"
+}
+```
+
+</Accordion>
+
+---
+
+### `excel_get_workbook_info`
+
+Get metadata about an existing workbook including sheet names and properties.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="excel_get_workbook_info - Request"
+{
+  "file_name": "string (required) - Path to Excel file"
+}
+```
+
+**Response:**
+```json title="excel_get_workbook_info - Response"
+{
+  "file_name": "report.xlsx",
+  "sheet_names": ["Summary", "Data", "Charts"],
+  "named_ranges": ["SalesData", "Totals"],
+  "file_size": 1024000,
+  "last_modified": "2024-01-15T10:30:00Z"
+}
+```
+
+</Accordion>
+
+---
+
+### `excel_create_worksheet`
+
+Add new worksheets to existing workbooks.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="excel_create_worksheet - Request"
+{
+  "file_name": "string (required) - Path to Excel file",
+  "sheet_name": "string (required) - Name of new worksheet"
+}
+```
+
+</Accordion>
+
+---
+
+### `excel_copy_worksheet`
+
+Duplicate existing worksheets within the same workbook.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="excel_copy_worksheet - Request"
+{
+  "file_name": "string (required) - Path to Excel file",
+  "source_sheet": "string (required) - Name of sheet to copy",
+  "target_sheet": "string (required) - Name of new copied sheet"
+}
+```
+
+</Accordion>
+
+---
+
+### `excel_delete_worksheet`
+
+Remove worksheets from workbooks.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="excel_delete_worksheet - Request"
+{
+  "file_name": "string (required) - Path to Excel file",
+  "sheet_name": "string (required) - Name of sheet to delete"
+}
+```
+
+</Accordion>
+
+#### Data Operations (4 tools)
+
+---
+
+### `excel_read_data_from_excel`
+
+Read cell values and ranges from Excel sheets with validation metadata.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="excel_read_data_from_excel - Request"
+{
+  "file_name": "string (required) - Path to Excel file",
+  "sheet_name": "string (required) - Name of worksheet",
+  "start_cell": "string (default: 'A1') - Starting cell reference",
+  "end_cell": "string (optional) - Ending cell reference for range"
+}
+```
+
+**Response:**
+```json title="excel_read_data_from_excel - Response"
+{
+  "data": [
+    ["Name", "Age", "Salary"],
+    ["John Doe", 30, 50000],
+    ["Jane Smith", 25, 45000]
+  ],
+  "range": "A1:C3",
+  "cell_count": 9,
+  "has_headers": true
+}
+```
+
+</Accordion>
+
+---
+
+### `excel_write_data_to_excel`
+
+Write data arrays to Excel sheets starting from specified cell.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="excel_write_data_to_excel - Request"
+{
+  "file_name": "string (required) - Path to Excel file",
+  "sheet_name": "string (required) - Name of worksheet",
+  "data": "array[array] (required) - 2D array of data to write",
+  "start_cell": "string (default: 'A1') - Starting cell reference"
+}
+```
+
+**Response:**
+```json title="excel_write_data_to_excel - Response"
+{
+  "status": "success",
+  "rows_written": 100,
+  "columns_written": 5,
+  "range_affected": "A1:E100"
+}
+```
+
+</Accordion>
+
+---
+
+### `excel_apply_formula`
+
+Add Excel formulas to specific cells with validation.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="excel_apply_formula - Request"
+{
+  "file_name": "string (required) - Path to Excel file",
+  "sheet_name": "string (required) - Name of worksheet",
+  "cell": "string (required) - Cell reference (e.g., 'A1')",
+  "formula": "string (required) - Excel formula (e.g., '=SUM(A1:A10)')"
+}
+```
+
+</Accordion>
+
+---
+
+### `excel_validate_formula_syntax`
+
+Check formula validity before applying to cells.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="excel_validate_formula_syntax - Request"
+{
+  "formula": "string (required) - Excel formula to validate"
+}
+```
+
+**Response:**
+```json title="excel_validate_formula_syntax - Response"
+{
+  "is_valid": true,
+  "formula": "=SUM(A1:A10)",
+  "parsed_references": ["A1:A10"],
+  "function_used": ["SUM"]
+}
+```
+
+</Accordion>
+
+#### Formatting & Styling (6 tools)
+
+---
+
+### `excel_format_range`
+
+Apply comprehensive formatting to cell ranges including fonts, colors, borders, and number formats.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="excel_format_range - Request"
+{
+  "file_name": "string (required) - Path to Excel file",
+  "sheet_name": "string (required) - Name of worksheet",
+  "range": "string (required) - Cell range (e.g., 'A1:C10')",
+  "formatting": {
+    "font": {
+      "name": "string (optional) - Font name",
+      "size": "number (optional) - Font size",
+      "bold": "boolean (optional) - Bold text",
+      "italic": "boolean (optional) - Italic text",
+      "color": "string (optional) - Font color (hex)"
+    },
+    "fill": {
+      "color": "string (optional) - Background color (hex)"
+    },
+    "border": {
+      "style": "string (optional) - Border style",
+      "color": "string (optional) - Border color (hex)"
+    },
+    "alignment": {
+      "horizontal": "string (optional) - left/center/right",
+      "vertical": "string (optional) - top/center/bottom"
+    },
+    "number_format": "string (optional) - Number format code"
+  }
+}
+```
+
+</Accordion>
+
+---
+
+### `excel_merge_cells` / `excel_unmerge_cells`
+
+Merge or unmerge cell ranges for headers and layout.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="excel_merge_cells - Request"
+{
+  "file_name": "string (required) - Path to Excel file",
+  "sheet_name": "string (required) - Name of worksheet",
+  "range": "string (required) - Cell range to merge/unmerge"
+}
+```
+
+</Accordion>
+
+---
+
+### `excel_get_merged_cells`
+
+List all merged cell ranges in a worksheet.
+
+**Response:**
+```json title="excel_get_merged_cells - Response"
+{
+  "merged_ranges": ["A1:C1", "A5:B7"],
+  "count": 2
+}
+```
+
+---
+
+### `excel_copy_range`
+
+Copy cell ranges with formatting and formulas preserved.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="excel_copy_range - Request"
+{
+  "file_name": "string (required) - Path to Excel file",
+  "sheet_name": "string (required) - Name of worksheet",
+  "source_range": "string (required) - Source range to copy",
+  "destination_cell": "string (required) - Destination cell reference"
+}
+```
+
+</Accordion>
+
+---
+
+### `excel_delete_range`
+
+Delete cell ranges and shift remaining cells.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="excel_delete_range - Request"
+{
+  "file_name": "string (required) - Path to Excel file",
+  "sheet_name": "string (required) - Name of worksheet",
+  "range": "string (required) - Range to delete",
+  "shift": "string (optional) - 'up' or 'left' for shift direction"
+}
+```
+
+</Accordion>
+
+#### Advanced Features (5 tools)
+
+---
+
+### `excel_create_chart`
+
+Generate professional charts with extensive customization options.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="excel_create_chart - Request"
+{
+  "file_name": "string (required) - Path to Excel file",
+  "sheet_name": "string (required) - Name of worksheet",
+  "chart_type": "string (required) - Chart type: line/bar/pie/scatter/area",
+  "data_range": "string (required) - Data range for chart",
+  "title": "string (optional) - Chart title",
+  "chart_position": "string (optional) - Position cell reference"
+}
+```
+
+**Response:**
+```json title="excel_create_chart - Response"
+{
+  "status": "success",
+  "chart_id": "chart_001",
+  "chart_type": "line",
+  "position": "E2:M20",
+  "data_series": 3
+}
+```
+
+</Accordion>
+
+---
+
+### `excel_create_pivot_table`
+
+Create pivot tables for data analysis and aggregation.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="excel_create_pivot_table - Request"
+{
+  "file_name": "string (required) - Path to Excel file",
+  "sheet_name": "string (required) - Name of worksheet",
+  "data_range": "string (required) - Source data range",
+  "pivot_config": {
+    "rows": "array[string] - Row fields",
+    "columns": "array[string] - Column fields", 
+    "values": "array[object] - Value fields with aggregation",
+    "filters": "array[string] - Filter fields"
+  }
+}
+```
+
+</Accordion>
+
+---
+
+### `excel_create_table`
+
+Create native Excel tables with filtering and sorting capabilities.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="excel_create_table - Request"
+{
+  "file_name": "string (required) - Path to Excel file",
+  "sheet_name": "string (required) - Name of worksheet",
+  "data_range": "string (required) - Data range for table",
+  "table_name": "string (optional) - Name for the table",
+  "has_headers": "boolean (default: true) - Whether first row contains headers"
+}
+```
+
+</Accordion>
+
+---
+
+### `excel_validate_excel_range`
+
+Verify that cell range references are valid.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="excel_validate_excel_range - Request"
+{
+  "range": "string (required) - Range to validate (e.g., 'A1:C10')"
+}
+```
+
+</Accordion>
+
+---
+
+### `excel_get_data_validation_info`
+
+Extract data validation rules from cells.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="excel_get_data_validation_info - Request"
+{
+  "file_name": "string (required) - Path to Excel file",
+  "sheet_name": "string (required) - Name of worksheet",
+  "cell": "string (required) - Cell reference"
+}
+```
+
+</Accordion>
+
+### 💰 Finance Tools (15+ tools)
+
+Real-time financial data and analysis tools powered by Financial Datasets API.
+
+#### Market Data Tools
+
+---
+
+### `finance_getPriceSnapshot`
+
+Get current stock prices with comprehensive market data.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="finance_getPriceSnapshot - Request"
+{
+  "ticker": "string (required) - Stock ticker symbol (e.g., 'AAPL', 'TSLA')"
+}
+```
+
+**Response:**
+```json title="finance_getPriceSnapshot - Response"
+{
+  "ticker": "AAPL",
+  "price": 150.25,
+  "change": 2.50,
+  "change_percent": 1.69,
+  "volume": 45000000,
+  "market_cap": 2400000000000,
+  "52_week_high": 180.00,
+  "52_week_low": 120.00,
+  "pe_ratio": 25.5,
+  "dividend_yield": 0.52,
+  "timestamp": "2024-01-15T16:00:00Z"
+}
+```
+
+</Accordion>
+
+---
+
+### `finance_getHistoricalPrices`
+
+Retrieve historical price data with flexible time periods.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="finance_getHistoricalPrices - Request"
+{
+  "ticker": "string (required) - Stock ticker symbol",
+  "period": "string (default: '1y') - Time period: 1d/5d/1mo/3mo/6mo/1y/2y/5y/10y/ytd/max",
+  "interval": "string (default: '1d') - Data interval: 1m/2m/5m/15m/30m/60m/90m/1h/1d/5d/1wk/1mo/3mo"
+}
+```
+
+**Response:**
+```json title="finance_getHistoricalPrices - Response"
+{
+  "ticker": "AAPL",
+  "period": "1y",
+  "interval": "1d",
+  "data": [
+    {
+      "date": "2024-01-15",
+      "open": 148.50,
+      "high": 152.00,
+      "low": 147.80,
+      "close": 150.25,
+      "volume": 45000000,
+      "adj_close": 150.25
+    }
+  ],
+  "data_points": 252
+}
+```
+
+</Accordion>
+
+---
+
+### `finance_getIntradayPrices`
+
+Get intraday trading data for day trading analysis.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="finance_getIntradayPrices - Request"
+{
+  "ticker": "string (required) - Stock ticker symbol",
+  "interval": "string (default: '5m') - Interval: 1m/2m/5m/15m/30m/60m/90m"
+}
+```
+
+</Accordion>
+
+#### Company Financial Data
+
+---
+
+### `finance_getFinancials`
+
+Access comprehensive financial statements including income statements, balance sheets, and cash flow.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="finance_getFinancials - Request"
+{
+  "ticker": "string (required) - Stock ticker symbol",
+  "period": "string (default: 'quarterly') - 'quarterly' or 'annual'",
+  "limit": "integer (default: 4) - Number of periods to return",
+  "years": "integer (optional) - Alias for limit parameter"
+}
+```
+
+**Response:**
+```json title="finance_getFinancials - Response"
+{
+  "ticker": "AAPL",
+  "period": "quarterly",
+  "income_statements": [
+    {
+      "period_ending": "2023-12-31",
+      "revenue": 119575000000,
+      "gross_profit": 54738000000,
+      "operating_income": 40323000000,
+      "net_income": 33916000000,
+      "earnings_per_share": 2.18
+    }
+  ],
+  "balance_sheets": [
+    {
+      "period_ending": "2023-12-31",
+      "total_assets": 352755000000,
+      "total_liabilities": 274764000000,
+      "shareholders_equity": 77991000000
+    }
+  ],
+  "cash_flow_statements": [
+    {
+      "period_ending": "2023-12-31",
+      "operating_cash_flow": 46327000000,
+      "investing_cash_flow": -1445000000,
+      "financing_cash_flow": -35563000000
+    }
+  ]
+}
+```
+
+</Accordion>
+
+---
+
+### `finance_getFinancialRatios`
+
+Calculate and retrieve key financial ratios and metrics.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="finance_getFinancialRatios - Request"
+{
+  "ticker": "string (required) - Stock ticker symbol",
+  "period": "string (default: 'quarterly') - 'quarterly' or 'annual'"
+}
+```
+
+**Response:**
+```json title="finance_getFinancialRatios - Response"
+{
+  "ticker": "AAPL",
+  "ratios": {
+    "profitability": {
+      "gross_margin": 0.458,
+      "operating_margin": 0.337,
+      "net_margin": 0.284,
+      "return_on_assets": 0.096,
+      "return_on_equity": 0.435
+    },
+    "liquidity": {
+      "current_ratio": 1.02,
+      "quick_ratio": 0.85,
+      "cash_ratio": 0.52
+    },
+    "efficiency": {
+      "asset_turnover": 1.12,
+      "inventory_turnover": 35.8,
+      "receivables_turnover": 15.2
+    },
+    "leverage": {
+      "debt_to_equity": 2.53,
+      "debt_ratio": 0.32,
+      "interest_coverage": 23.4
+    }
+  }
+}
+```
+
+</Accordion>
+
+---
+
+### `finance_getSegmentedFinancials`
+
+Get business segment financial data for diversified companies.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="finance_getSegmentedFinancials - Request"
+{
+  "ticker": "string (required) - Stock ticker symbol",
+  "period": "string (default: 'quarterly') - 'quarterly' or 'annual'"
+}
+```
+
+</Accordion>
+
+#### Company Information
+
+---
+
+### `finance_getCompanyInfo`
+
+Retrieve comprehensive company profiles and business descriptions.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="finance_getCompanyInfo - Request"
+{
+  "ticker": "string (required) - Stock ticker symbol"
+}
+```
+
+**Response:**
+```json title="finance_getCompanyInfo - Response"
+{
+  "ticker": "AAPL",
+  "company_name": "Apple Inc.",
+  "sector": "Technology",
+  "industry": "Consumer Electronics",
+  "description": "Apple Inc. designs, manufactures, and markets smartphones, personal computers, tablets, wearables, and accessories worldwide.",
+  "headquarters": "Cupertino, CA",
+  "employees": 161000,
+  "founded": "1976-04-01",
+  "market_cap": 2400000000000,
+  "enterprise_value": 2380000000000,
+  "website": "https://www.apple.com"
+}
+```
+
+</Accordion>
+
+---
+
+### `finance_getCompanyNews`
+
+Get latest company-specific news and announcements.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="finance_getCompanyNews - Request"
+{
+  "ticker": "string (required) - Stock ticker symbol",
+  "limit": "integer (default: 10) - Number of news articles"
+}
+```
+
+**Response:**
+```json title="finance_getCompanyNews - Response"
+{
+  "ticker": "AAPL",
+  "news": [
+    {
+      "title": "Apple Reports Q4 Earnings Beat",
+      "summary": "Apple Inc. reported quarterly earnings that exceeded analyst expectations...",
+      "url": "https://finance.example.com/news/apple-earnings",
+      "published_date": "2024-01-15T09:00:00Z",
+      "source": "Financial News Network"
+    }
+  ],
+  "total_articles": 25
+}
+```
+
+</Accordion>
+
+---
+
+### `finance_getEarnings`
+
+Access earnings data, estimates, and historical performance.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="finance_getEarnings - Request"
+{
+  "ticker": "string (required) - Stock ticker symbol",
+  "period": "string (default: 'quarterly') - 'quarterly' or 'annual'"
+}
+```
+
+</Accordion>
+
+#### Market Analysis Tools
+
+---
+
+### `finance_getInsiderTrades`
+
+Track insider trading activity for compliance and analysis.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="finance_getInsiderTrades - Request"
+{
+  "ticker": "string (required) - Stock ticker symbol",
+  "limit": "integer (default: 50) - Number of transactions"
+}
+```
+
+**Response:**
+```json title="finance_getInsiderTrades - Response"
+{
+  "ticker": "AAPL",
+  "insider_trades": [
+    {
+      "insider_name": "John Doe",
+      "title": "Chief Executive Officer",
+      "transaction_date": "2024-01-10",
+      "transaction_type": "Sale",
+      "shares": 10000,
+      "price_per_share": 150.00,
+      "total_value": 1500000,
+      "shares_owned_after": 500000
+    }
+  ]
+}
+```
+
+</Accordion>
+
+---
+
+### `finance_getInstitutionalOwnership`
+
+Analyze institutional holdings and ownership patterns.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="finance_getInstitutionalOwnership - Request"
+{
+  "ticker": "string (required) - Stock ticker symbol"
+}
+```
+
+</Accordion>
+
+---
+
+### `finance_getSECFilings`
+
+Access regulatory filings including 10-K, 10-Q, and 8-K documents.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="finance_getSECFilings - Request"
+{
+  "ticker": "string (required) - Stock ticker symbol",
+  "filing_type": "string (optional) - Specific filing type to filter",
+  "limit": "integer (default: 10) - Number of filings"
+}
+```
+
+</Accordion>
+
+#### Search and Discovery
+
+---
+
+### `finance_searchCompanies`
+
+Search for companies by name or business description.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="finance_searchCompanies - Request"
+{
+  "query": "string (required) - Search term",
+  "limit": "integer (default: 10) - Number of results"
+}
+```
+
+</Accordion>
+
+---
+
+### `finance_getMarketIndices`
+
+Get major market indices data and performance.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:** None
+
+**Response:**
+```json title="finance_getMarketIndices - Response"
+{
+  "indices": [
+    {
+      "name": "S&P 500",
+      "symbol": "^GSPC",
+      "value": 4800.50,
+      "change": 25.30,
+      "change_percent": 0.53
+    },
+    {
+      "name": "Dow Jones",
+      "symbol": "^DJI", 
+      "value": 37000.25,
+      "change": 150.75,
+      "change_percent": 0.41
+    }
+  ]
+}
+```
+
+</Accordion>
+
+---
+
+### `finance_getSectorPerformance`
+
+Analyze sector performance and rotation trends.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="finance_getSectorPerformance - Request"
+{
+  "sector": "string (optional) - Specific sector to analyze"
+}
+```
+
+</Accordion>
+
+#### Economic Data
+
+---
+
+### `finance_getInterestRates`
+
+Access various interest rate data including federal funds rate.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="finance_getInterestRates - Request"
+{
+  "rate_type": "string (default: 'federal_funds') - Type of interest rate"
+}
+```
+
+</Accordion>
+
+---
+
+### `finance_getEconomicIndicators`
+
+Get economic indicators like GDP, inflation, unemployment.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="finance_getEconomicIndicators - Request"
+{
+  "indicator": "string (required) - Economic indicator name"
+}
+```
+
+</Accordion>
+
+### 🏗️ Construction Tools (6 tools)
+
+Professional construction cost data and material pricing tools with clean names (no prefixes).
+
+#### Core Search Tools
+
+---
+
+### `searchSources`
+
+Search for construction cost data by location and material type.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="searchSources - Request"
+{
+  "search_term": "string (required) - Search term for materials/services",
+  "state": "string (required) - State name (e.g., 'California')",
+  "county": "string (required) - County name (e.g., 'Los Angeles County')",
+  "source_type": "string (optional) - Type: MATERIAL/LABOR/EQUIPMENT/ASSEMBLY/SCOPE",
+  "limit": "integer (default: 10) - Number of results",
+  "category_path": "array[string] (optional) - Category filter",
+  "zipcode": "string (optional) - ZIP code for location"
+}
+```
+
+**Response:**
+```json title="searchSources - Response"
+{
+  "sources": [
+    {
+      "id": "src_12345",
+      "name": "Concrete Ready Mix 3000 PSI",
+      "source_type": "MATERIAL",
+      "description": "Standard concrete mix for foundation work",
+      "total_cost_usd": 125.50,
+      "labor_cost_usd": 35.00,
+      "material_cost_usd": 90.50,
+      "unit": "cubic yard"
+    }
+  ],
+  "total_count": 25,
+  "search_term": "concrete",
+  "location": "Los Angeles County, California"
+}
+```
+
+</Accordion>
+
+---
+
+### `getCategoryTree`
+
+Get the construction category hierarchy for organized browsing.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="getCategoryTree - Request"
+{
+  "category_path": "array[string] (optional) - Category path filter"
+}
+```
+
+**Response:**
+```json title="getCategoryTree - Response"
+{
+  "categories": [
+    "Concrete",
+    "Steel", 
+    "Lumber",
+    "Electrical",
+    "Plumbing"
+  ],
+  "category_count": 5
+}
+```
+
+</Accordion>
+
+---
+
+### `getSourcesBatch`
+
+Get pricing for multiple construction sources at once.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="getSourcesBatch - Request"
+{
+  "source_ids": "array[string] (required) - List of source IDs",
+  "state": "string (required) - State name",
+  "county": "string (required) - County name",
+  "zipcode": "string (optional) - ZIP code"
+}
+```
+
+**Response:**
+```json title="getSourcesBatch - Response"
+{
+  "sources": [
+    {
+      "id": "src_12345",
+      "name": "Concrete Ready Mix",
+      "source_type": "MATERIAL",
+      "total_cost_usd": 125.50,
+      "labor_cost_usd": 35.00,
+      "material_cost_usd": 90.50
+    }
+  ],
+  "location": "Los Angeles County, California",
+  "source_count": 1
+}
+```
+
+</Accordion>
+
+#### Specialized Lookup Tools
+
+---
+
+### `quickCostLookup`
+
+Quick lookup for common construction materials with simplified parameters.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="quickCostLookup - Request"
+{
+  "material_name": "string (required) - Name of construction material (e.g., 'concrete', 'lumber', 'steel')",
+  "state": "string (required) - State name (e.g., 'California')",
+  "county": "string (required) - County name (e.g., 'Los Angeles County')",
+  "limit": "integer (default: 3) - Number of results to return"
+}
+```
+
+**Response:**
+```json title="quickCostLookup - Response"
+{
+  "sources": [
+    {
+      "id": "src_12345",
+      "name": "Ready Mix Concrete 3000 PSI",
+      "source_type": "MATERIAL",
+      "total_cost_usd": 125.50,
+      "material_cost_usd": 90.50,
+      "labor_cost_usd": 35.00
+    }
+  ],
+  "total_count": 3,
+  "search_term": "concrete",
+  "location": "Los Angeles County, California"
+}
+```
+
+</Accordion>
+
+---
+
+### `getLaborRates`
+
+Get labor rates for specific construction trades.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="getLaborRates - Request"
+{
+  "trade": "string (required) - Construction trade (e.g., 'carpenter', 'electrician', 'plumber', 'contractor')",
+  "state": "string (required) - State name (e.g., 'California')",
+  "county": "string (required) - County name (e.g., 'Los Angeles County')"
+}
+```
+
+**Response:**
+```json title="getLaborRates - Response"
+{
+  "sources": [
+    {
+      "id": "src_67890",
+      "name": "Licensed Electrician - Commercial",
+      "source_type": "LABOR",
+      "total_cost_usd": 85.00,
+      "labor_cost_usd": 85.00,
+      "description": "Per hour rate for commercial electrical work"
+    }
+  ],
+  "total_count": 5,
+  "search_term": "electrician",
+  "location": "Los Angeles County, California"
+}
+```
+
+</Accordion>
+
+---
+
+### `getEquipmentRentalRates`
+
+Get equipment rental rates for construction equipment.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="getEquipmentRentalRates - Request"
+{
+  "equipment_type": "string (required) - Type of equipment (e.g., 'excavator', 'crane', 'bulldozer', 'forklift')",
+  "state": "string (required) - State name (e.g., 'California')",
+  "county": "string (required) - County name (e.g., 'Los Angeles County')"
+}
+```
+
+**Response:**
+```json title="getEquipmentRentalRates - Response"
+{
+  "sources": [
+    {
+      "id": "src_11111",
+      "name": "Excavator 320 Size - Daily Rental",
+      "source_type": "EQUIPMENT",
+      "total_cost_usd": 450.00,
+      "material_cost_usd": 450.00,
+      "description": "Mid-size excavator daily rental rate"
+    }
+  ],
+  "total_count": 5,
+  "search_term": "excavator",
+  "location": "Los Angeles County, California"
+}
+```
+
+</Accordion>
+
+### 🏠 Property Tools (13 tools)
+
+Real estate data, property valuations, and market analysis with access to 140+ million property records.
+
+#### Property Data Tools
+
+---
+
+### `getPropertyRecords`
+
+Search for property records by location and attributes.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="getPropertyRecords - Request"
+{
+  "address": "string (optional) - Property address",
+  "city": "string (optional) - City name",
+  "state": "string (optional) - State name",
+  "zipCode": "string (optional) - ZIP code",
+  "propertyType": "string (optional) - Property type",
+  "bedrooms": "integer (optional) - Number of bedrooms",
+  "bathrooms": "number (optional) - Number of bathrooms",
+  "squareFootage": "integer (optional) - Square footage",
+  "lotSize": "integer (optional) - Lot size in square feet",
+  "yearBuilt": "integer (optional) - Year the property was built",
+  "limit": "integer (default: 20) - Result limit",
+  "offset": "integer (default: 0) - Result offset for pagination"
+}
+```
+
+**Response:**
+```json title="getPropertyRecords - Response"
+{
+  "properties": [
+    {
+      "id": "prop_12345",
+      "address": "123 Main St, Austin, TX 78701",
+      "propertyType": "Single Family",
+      "bedrooms": 3,
+      "bathrooms": 2,
+      "squareFootage": 1500,
+      "lotSize": 7200,
+      "yearBuilt": 1995,
+      "lastSaleDate": "2022-03-15",
+      "lastSalePrice": 450000,
+      "estimatedValue": 485000,
+      "taxAssessment": 425000
+    }
+  ],
+  "total_count": 150,
+  "page_info": {
+    "limit": 20,
+    "offset": 0,
+    "has_more": true
+  }
+}
+```
+
+</Accordion>
+
+---
+
+### `getPropertyById`
+Get detailed property information by property ID.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json
+{
+  "propertyId": "string (required) - Unique property identifier"
+}
+```
+
+**Response:**
+```json
+{
+  "id": "prop_12345",
+  "address": "123 Main St, Austin, TX 78701",
+  "propertyType": "Single Family",
+  "bedrooms": 3,
+  "bathrooms": 2,
+  "squareFootage": 1500,
+  "lotSize": 7200,
+  "yearBuilt": 1995,
+  "detailed_info": {
+    "construction_type": "Frame",
+    "roof_material": "Asphalt Shingle",
+    "heating_type": "Central",
+    "cooling_type": "Central Air"
+  }
+}
+```
+
+</Accordion>
+
+---
+
+### `getRandomProperties`
+Get random property records for sampling and discovery.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json
+{
+  "limit": "integer (default: 20) - Number of random properties to return"
+}
+```
+
+</Accordion>
+
+#### Property Valuation Tools
+
+---
+
+### `getValueEstimate`
+Get property value estimates with comparable sales analysis.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json
+{
+  "address": "string (optional) - Property address",
+  "latitude": "number (optional) - Property latitude",
+  "longitude": "number (optional) - Property longitude",
+  "propertyType": "string (optional) - Property type",
+  "bedrooms": "integer (optional) - Number of bedrooms",
+  "bathrooms": "number (optional) - Number of bathrooms",
+  "squareFootage": "integer (optional) - Square footage",
+  "maxRadius": "number (optional) - Maximum search radius for comparables in miles",
+  "daysOld": "integer (optional) - Maximum age of comparable sales in days",
+  "compCount": "integer (optional) - Number of comparable sales to include"
+}
+```
+
+**Response:**
+```json
+{
+  "address": "123 Main St, Austin, TX",
+  "estimate": {
+    "value": 485000,
+    "low": 460000,
+    "high": 510000,
+    "confidence": 0.85,
+    "date": "2024-01-15"
+  },
+  "comparables": [
+    {
+      "address": "125 Main St",
+      "sold_date": "2023-12-01",
+      "sold_price": 475000,
+      "bedrooms": 3,
+      "bathrooms": 2,
+      "square_footage": 1480,
+      "distance_miles": 0.1
+    }
+  ],
+  "price_per_sqft": 323,
+  "methodology": "Automated Valuation Model"
+}
+```
+
+</Accordion>
+
+---
+
+### `getRentEstimate`
+Get property rent estimates with rental comparables.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json
+{
+  "address": "string (optional) - Property address",
+  "latitude": "number (optional) - Property latitude",
+  "longitude": "number (optional) - Property longitude",
+  "propertyType": "string (optional) - Property type",
+  "bedrooms": "integer (optional) - Number of bedrooms",
+  "bathrooms": "number (optional) - Number of bathrooms",
+  "squareFootage": "integer (optional) - Square footage",
+  "maxRadius": "number (optional) - Maximum search radius for comparables in miles",
+  "daysOld": "integer (optional) - Maximum age of comparable rentals in days",
+  "compCount": "integer (optional) - Number of comparable rentals to include"
+}
+```
+
+**Response:**
+```json
+{
+  "address": "123 Main St, Austin, TX",
+  "rent_estimate": {
+    "rent": 2400,
+    "low": 2200,
+    "high": 2600,
+    "confidence": 0.82,
+    "date": "2024-01-15"
+  },
+  "comparable_rentals": [
+    {
+      "address": "127 Main St",
+      "monthly_rent": 2350,
+      "bedrooms": 3,
+      "bathrooms": 2,
+      "square_footage": 1520,
+      "distance_miles": 0.2
+    }
+  ],
+  "rent_per_sqft": 1.60,
+  "market_trends": {
+    "monthly_change": 0.02,
+    "yearly_change": 0.08
+  }
+}
+```
+
+</Accordion>
+
+#### Property Listings Tools
+
+---
+
+### `getSaleListings`
+Search for active property listings for sale.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json
+{
+  "address": "string (optional) - Property address",
+  "city": "string (optional) - City name",
+  "state": "string (optional) - State name",
+  "zipCode": "string (optional) - ZIP code",
+  "latitude": "number (optional) - Search center latitude",
+  "longitude": "number (optional) - Search center longitude",
+  "radius": "number (optional) - Search radius in miles",
+  "propertyType": "string (optional) - Property type filter",
+  "bedrooms": "integer (optional) - Number of bedrooms",
+  "bathrooms": "number (optional) - Number of bathrooms",
+  "squareFootage": "integer (optional) - Square footage",
+  "priceMin": "integer (optional) - Minimum listing price",
+  "priceMax": "integer (optional) - Maximum listing price",
+  "status": "string (optional) - Listing status filter",
+  "limit": "integer (default: 20) - Result limit",
+  "offset": "integer (default: 0) - Result offset for pagination"
+}
+```
+
+**Response:**
+```json
+{
+  "listings": [
+    {
+      "id": "listing_12345",
+      "address": "456 Oak St, Austin, TX",
+      "price": 525000,
+      "bedrooms": 4,
+      "bathrooms": 3,
+      "squareFootage": 2100,
+      "propertyType": "Single Family",
+      "status": "Active",
+      "listingDate": "2024-01-10",
+      "daysOnMarket": 5
+    }
+  ],
+  "total_count": 45,
+  "search_criteria": {
+    "city": "Austin",
+    "state": "TX",
+    "priceMax": 600000
+  }
+}
+```
+
+</Accordion>
+
+---
+
+### `getRentalListings`
+Search for active rental property listings.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json
+{
+  "address": "string (optional) - Property address",
+  "city": "string (optional) - City name",
+  "state": "string (optional) - State name",
+  "zipCode": "string (optional) - ZIP code",
+  "latitude": "number (optional) - Search center latitude",
+  "longitude": "number (optional) - Search center longitude",
+  "radius": "number (optional) - Search radius in miles",
+  "propertyType": "string (optional) - Property type filter",
+  "bedrooms": "integer (optional) - Number of bedrooms",
+  "bathrooms": "number (optional) - Number of bathrooms",
+  "squareFootage": "integer (optional) - Square footage",
+  "rentMin": "integer (optional) - Minimum monthly rent",
+  "rentMax": "integer (optional) - Maximum monthly rent",
+  "status": "string (optional) - Listing status filter",
+  "limit": "integer (default: 20) - Result limit",
+  "offset": "integer (default: 0) - Result offset for pagination"
+}
+```
+
+</Accordion>
+
+---
+
+### `getSaleListingById`
+Get detailed sale listing information by listing ID.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json
+{
+  "listingId": "string (required) - Unique sale listing identifier"
+}
+```
+
+</Accordion>
+
+---
+
+### `getRentalListingById`
+Get detailed rental listing information by listing ID.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json
+{
+  "listingId": "string (required) - Unique rental listing identifier"
+}
+```
+
+</Accordion>
+
+#### Market Analysis Tools
+
+---
+
+### `getMarketStatistics`
+Get market statistics and trends for a ZIP code area.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json
+{
+  "zipCode": "string (required) - ZIP code for market analysis"
+}
+```
+
+**Response:**
+```json
+{
+  "zipCode": "78701",
+  "market_statistics": {
+    "median_sale_price": 485000,
+    "median_rent": 2400,
+    "price_per_sqft": 320,
+    "rent_per_sqft": 1.60,
+    "inventory_count": 45,
+    "days_on_market_avg": 28,
+    "price_change_30d": 0.02,
+    "price_change_1y": 0.12
+  },
+  "property_types": [
+    {
+      "type": "Single Family",
+      "count": 30,
+      "median_price": 525000
+    },
+    {
+      "type": "Condo",
+      "count": 15,
+      "median_price": 385000
+    }
+  ]
+}
+```
+
+</Accordion>
+
+---
+
+### `analyzeProperty`
+Get comprehensive property analysis including value estimate, rent estimate, and comparables.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json
+{
+  "address": "string (required) - Property address",
+  "propertyType": "string (optional) - Property type",
+  "bedrooms": "integer (optional) - Number of bedrooms",
+  "bathrooms": "number (optional) - Number of bathrooms",
+  "squareFootage": "integer (optional) - Square footage"
+}
+```
+
+**Response:**
+```json
+{
+  "property": {
+    "address": "123 Main St, Austin, TX",
+    "propertyType": "Single Family",
+    "bedrooms": 3,
+    "bathrooms": 2,
+    "squareFootage": 1500
+  },
+  "value_estimate": {
+    "value": 485000,
+    "confidence": 0.85
+  },
+  "rent_estimate": {
+    "rent": 2400,
+    "confidence": 0.82
+  },
+  "investment_metrics": {
+    "gross_yield": 5.9,
+    "price_to_rent_ratio": 16.9,
+    "cash_flow_potential": "positive"
+  }
+}
+```
+
+</Accordion>
+
+---
+
+### `compareMarkets`
+Compare market statistics across multiple ZIP code areas.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json
+{
+  "zipCodes": "array[string] (required) - List of ZIP codes to compare"
+}
+```
+
+**Response:**
+```json
+{
+  "markets": {
+    "78701": {
+      "median_sale_price": 485000,
+      "median_rent": 2400,
+      "price_change_1y": 0.12
+    },
+    "78702": {
+      "median_sale_price": 425000,
+      "median_rent": 2200,
+      "price_change_1y": 0.08
+    }
+  },
+  "comparison": {
+    "highest_appreciation": "78701",
+    "best_rental_yield": "78702",
+    "lowest_price_entry": "78702"
+  }
+}
+```
+
+</Accordion>
+
+---
+
+### `findInvestmentProperties`
+Find potential investment properties with value and rent estimates for ROI analysis.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json
+{
+  "city": "string (required) - City to search",
+  "state": "string (required) - State to search",
+  "maxPrice": "integer (optional) - Maximum purchase price",
+  "minBedrooms": "integer (optional) - Minimum number of bedrooms",
+  "propertyType": "string (optional) - Property type filter",
+  "limit": "integer (default: 10) - Number of properties to analyze"
+}
+```
+
+**Response:**
+```json
+{
+  "search_criteria": {
+    "city": "Austin",
+    "state": "TX",
+    "maxPrice": 500000,
+    "minBedrooms": 2
+  },
+  "properties": [
+    {
+      "listing": {
+        "address": "789 Investment Ave",
+        "price": 425000,
+        "bedrooms": 3,
+        "bathrooms": 2
+      },
+      "rent_estimate": {
+        "rent": 2200
+      },
+      "investment_metrics": {
+        "monthly_gross_yield_percent": 0.52,
+        "annual_gross_yield_percent": 6.21,
+        "price_to_rent_ratio": 16.1
+      }
+    }
+  ]
+}
+```
+
+## Task Example: LBO Financial Calendarization
+
+**Calendarization** transforms quarterly financial data to align with different fiscal periods. For example, converting a company's fiscal quarters (which might run Feb-Apr, May-Jul, Aug-Oct, Nov-Jan) into calendar year periods (Jan-Mar, Apr-Jun, Jul-Sep, Oct-Dec).
+
+</Accordion>
+
+### Autonomous Execution Example
+
+**Task:** "Calendarize Walmart's quarterly data from October 1, 2023 to September 30, 2024"
+
+**Example Execution Flow:**
+```python
+#  agent utilizes our tools to complete task:
+steps = [
+    {"tool": "finance_get_income_statements", 
+     "args": {"ticker": "WMT", "period": "quarterly", "limit": 4}},
+    
+    {"tool": "finance_get_balance_sheets", 
+     "args": {"ticker": "WMT", "period": "quarterly", "limit": 4}},
+    
+    {"tool": "finance_get_cash_flow_statements", 
+     "args": {"ticker": "WMT", "period": "quarterly", "limit": 4}},
+    
+    {"tool": "excel_create_workbook", 
+     "args": {"filepath": "Walmart_Calendarized_Financials.xlsx"}},
+    
+    {"tool": "excel_write_data_to_excel", 
+     "args": {"data": "[[Revenue, 508075], [Cost of Sales, 381440], ...]"}},
+
+    {"tool": "excel_format_range", 
+     "args": {"formatting": {"number_format": "$#,##0"}}}
+]
+```
+
+**Result + Scoring:** End state excel file with calendarized financial data for us to score using our evaluators.
+
+### Available MCP Endpoints
+
+- **Standard JSON-RPC:** `https://playground.thetasoftware.ai/mcp`
+- **Streaming (Preferred):** `https://playground.thetasoftware.ai/mcp/streamable`
+- **Health Check:** `https://playground.thetasoftware.ai/mcp/health`
+
+## Authentication & Setup
+
+### Getting an API Key
+
+Contact support to get your Theta API key:
+- **Format:** `theta_xxxxxxxxxxxxxxxxxxxxxxx`
+- **Usage:** Include in Authorization header: `Bearer theta_YOUR_API_KEY`
