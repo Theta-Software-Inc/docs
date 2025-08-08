@@ -24,3 +24,53 @@ multiple should be used and identify the correct ticker symbols for the specifie
  
 When the agent is completed with its work, we evaluate the agent’s resulting file against our
 golden Excel sheet.
+
+
+
+## Tools Used
+
+- `excel_read_data_from_excel`  
+  Read data from an Excel file.
+
+- `excel_write_data_to_excel`  
+  Write data to an Excel file.
+
+- `excel_apply_formula`  
+  Apply formulas to cells in an Excel file.
+
+- `excel_validate_formula_syntax`  
+  Validate the syntax of Excel formulas.
+
+- `getInterestRates`  
+  Retrieve federal interest rate data for specified date ranges.
+
+- `getFinancials`  
+  Retrieve company financial statements and metrics.
+
+- `getPriceSnapshot`  
+  Get the current price or value of a security.
+
+- `getHistoricalPrices`  
+  Retrieve historical price data for securities.
+
+- `readDocument`  
+  Read and extract data from documents (e.g., PDFs, Word files).
+
+## Example Workflow
+
+1. `readDocument`  
+   Parse the assumptions document to extract debt tranches, rates, fees, and amortization rules.
+2. `excel_read_data_from_excel`  
+   Load the partially completed LBO workbook to understand existing links and inputs.
+3. `getInterestRates`  
+   Retrieve applicable benchmark/federal rates for the modeling period.
+4. `getFinancials`  
+   Pull company financials to sanity-check FCF drivers and base metrics.
+5. `getHistoricalPrices` / `getPriceSnapshot`  
+   Get pricing data for comps or current market context to inform exit multiple selection.
+6. `excel_write_data_to_excel`  
+   Populate the debt schedule inputs and any missing assumptions.
+7. `excel_apply_formula`  
+   Calculate interest expense, mandatory amortization, cash sweep, and link to FCF.
+8. `excel_validate_formula_syntax`  
+   Validate complex formulas to avoid errors and ensure correct references.

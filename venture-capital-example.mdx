@@ -16,3 +16,33 @@ The agent needs to use the Company Info Crunchbase function to access the size o
 
 When the agent is completed with its work, we evaluate the agent's resulting file against our golden Excel sheet.
 
+
+## Tools Used
+
+- `getCrunchbaseCompanyInfo`  
+  Retrieve company information from Crunchbase, including company uuid and funding details.
+
+- `getCrunchbaseFundingRounds`  
+  Retrieve detailed funding round data and investor information for a company, requires company uuid.
+
+- `excel_read_data_from_excel`  
+  Read data from an Excel file.
+
+- `excel_write_data_to_excel`  
+  Write data to an Excel file.
+
+- `excel_apply_formula`  
+  Apply formulas to cells in an Excel file.
+
+## Example Workflow
+
+1. `getCrunchbaseCompanyInfo`  
+   Fetch company profile and capture the `uuid` needed for downstream calls.
+2. `getCrunchbaseFundingRounds`  
+   Query rounds using the company `uuid` to retrieve amounts, dates, and investors.
+3. `excel_read_data_from_excel`  
+   Open the rounds/cap table worksheet.
+4. `excel_write_data_to_excel`
+   Populate round-by-round inputs (date, amount, pre/post, investors).
+5. `excel_apply_formula`
+   Compute dilution, ownership by round, and exit waterfall metrics.

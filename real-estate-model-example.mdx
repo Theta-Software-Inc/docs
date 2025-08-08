@@ -27,3 +27,75 @@ The Assumptions table is provided both in the PDF and as its own Excel file. The
 
 When the agent is completed with its work, we evaluate the agent's resulting file against our golden Excel sheet.
 
+
+## Tools Used
+
+- `getSaleListings`  
+  Retrieve current property sale listings based on filters such as location, price, and property type.
+
+- `getPropertyRecords`  
+  Search for property records by location and attributes.
+
+- `getPropertyById`  
+  Retrieve detailed information for a specific property by its unique ID.
+
+- `getValueEstimate`  
+  Get an estimated market value for a property.
+
+- `getRentEstimate`  
+  Get an estimated rental value for a property.
+
+- `analyzeProperty`  
+  Analyze a property for investment or suitability based on provided criteria.
+
+- `getMarketStatistics`  
+  Retrieve market statistics for a specified area (e.g., average price, days on market).
+
+- `compareMarkets`  
+  Compare real estate market data across multiple locations.
+
+- `findInvestmentProperties`  
+  Search for properties that meet investment criteria.
+
+- `searchSources`  
+  Search for material cost sources and suppliers.
+
+- `getLaborRates`  
+  Retrieve labor rates for specific trades and locations.
+
+- `getEquipmentRentalRates`  
+  Get equipment rental rates for specified equipment types and locations.
+
+- `excel_read_data_from_excel`  
+  Read data from an Excel file.
+
+- `excel_write_data_to_excel`  
+  Write data to an Excel file.
+
+- `readDocument`  
+  Read and extract data from documents (e.g., PDFs, Word files).
+ 
+## Example Workflow
+
+1. `getSaleListings`  
+   Search active listings that match budget, square footage, and agent constraints.
+2. `getPropertyRecords`  
+   Verify parcel attributes like lot size, year built, and ownership history.
+3. `getPropertyById`  
+   Pull detailed specs and confirm the target property’s key attributes.
+4. `getValueEstimate`  
+   Estimate market value using comparable sales.
+5. `getRentEstimate`  
+   Estimate achievable rent from comparable rentals.
+6. `analyzeProperty`  
+   Consolidate value, rent, and investment metrics for screening.
+7. `getMarketStatistics`
+   Add ZIP-level context and compare alternative submarkets.
+8. `searchSources` / `getLaborRates` / `getEquipmentRentalRates`  
+   Build hard/soft cost assumptions from materials, labor, and equipment data.
+9. `readDocument`  
+   Pull assumptions from the provided PDF.
+10. `excel_read_data_from_excel`  
+   Open the model workbook.
+11. `excel_write_data_to_excel`  
+   Fill in assumptions, costs, and unit mix into the model.
