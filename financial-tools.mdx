@@ -196,6 +196,82 @@ Calculate and retrieve key financial ratios and metrics.
 
 ---
 
+### `getHistoricalFinancialMetrics`
+Get historical financial metrics for a ticker, including valuation, profitability, efficiency, liquidity, leverage, growth, and per-share metrics.
+
+<Accordion title="View Parameters & Response">
+
+**Parameters:**
+```json title="getHistoricalFinancialMetrics - Request"
+{
+  "ticker": "string (required) - Stock ticker symbol",
+  "period": "enum<string> (required) - 'annual' | 'quarterly' | 'ttm'",
+  "limit": "integer (default: 4) - Number of periods to return",
+  "report_period": "string (optional) - Exact report period date (YYYY-MM-DD)",
+  "report_period_lte": "string (optional) - Latest report period on or before date (YYYY-MM-DD)",
+  "report_period_lt": "string (optional) - Latest report period before date (YYYY-MM-DD)",
+  "report_period_gte": "string (optional) - Earliest report period on or after date (YYYY-MM-DD)",
+  "report_period_gt": "string (optional) - Earliest report period after date (YYYY-MM-DD)"
+}
+```
+
+**Response:**
+```json title="getHistoricalFinancialMetrics - Response"
+{
+  "ticker": "AAPL",
+  "period": "annual",
+  "financial_metrics": [
+    {
+      "report_period": "2023-12-31",
+      "market_cap": 3000000000000,
+      "enterprise_value": 2900000000000,
+      "price_to_earnings_ratio": 25.5,
+      "price_to_book_ratio": 35.2,
+      "price_to_sales_ratio": 7.1,
+      "enterprise_value_to_ebitda_ratio": 18.7,
+      "enterprise_value_to_revenue_ratio": 7.0,
+      "free_cash_flow_yield": 0.028,
+      "peg_ratio": 1.4,
+      "gross_margin": 0.458,
+      "operating_margin": 0.337,
+      "net_margin": 0.284,
+      "return_on_equity": 0.435,
+      "return_on_assets": 0.096,
+      "return_on_invested_capital": 0.215,
+      "asset_turnover": 1.12,
+      "inventory_turnover": 35.8,
+      "receivables_turnover": 15.2,
+      "days_sales_outstanding": 24.0,
+      "operating_cycle": 42.0,
+      "working_capital_turnover": 4.8,
+      "current_ratio": 1.02,
+      "quick_ratio": 0.85,
+      "cash_ratio": 0.52,
+      "operating_cash_flow_ratio": 0.31,
+      "debt_to_equity": 2.53,
+      "debt_to_assets": 0.32,
+      "interest_coverage": 23.4,
+      "revenue_growth": 0.08,
+      "earnings_growth": 0.12,
+      "book_value_growth": 0.05,
+      "earnings_per_share_growth": 0.11,
+      "free_cash_flow_growth": 0.09,
+      "operating_income_growth": 0.10,
+      "ebitda_growth": 0.09,
+      "payout_ratio": 0.16,
+      "earnings_per_share": 6.12,
+      "book_value_per_share": 4.75,
+      "free_cash_flow_per_share": 5.25
+    }
+  ],
+  "count": 4
+}
+```
+
+</Accordion>
+
+---
+
 ### `getSegmentedFinancials`
 Get business segment financial data for diversified companies.
 

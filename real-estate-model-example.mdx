@@ -79,22 +79,28 @@ When the agent is completed with its work, we evaluate the agent's resulting fil
 
 1. `getSaleListings`  
    Search active listings that match budget, square footage, and agent constraints.
-2. `getPropertyRecords`  
-   Verify parcel attributes like lot size, year built, and ownership history.
 3. `getPropertyById`  
    Pull detailed specs and confirm the target property’s key attributes.
 4. `getValueEstimate`  
    Estimate market value using comparable sales.
-5. `getRentEstimate`  
-   Estimate achievable rent from comparable rentals.
+5. 'getRentEstimate'
+   Get an estimated rent estimate for the property.
 6. `analyzeProperty`  
    Consolidate value, rent, and investment metrics for screening.
 7. `getMarketStatistics`
    Add ZIP-level context and compare alternative submarkets.
-8. `searchSources` / `getLaborRates` / `getEquipmentRentalRates`  
-   Build hard/soft cost assumptions from materials, labor, and equipment data.
-9. `readDocument`  
+8. 'compareMarkets'
+   Compare real estate market data across multiple locations.
+9. 'findInvestmentProperties'
+   Search for porperties that meet investment criteria
+10. `searchSources`
+   Search for material cost sources and suppliers.
+11. 'getLaborRates'
+   Retrive labor rates for specific trades locations.
+12. `readDocument`  
    Pull assumptions from the provided PDF.
+13. 'getEquipmentRentalRates'
+   Get equipment rental rates for specified equipment types and locations.
 10. `excel_read_data_from_excel`  
    Open the model workbook.
 11. `excel_write_data_to_excel`  
