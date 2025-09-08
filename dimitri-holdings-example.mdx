@@ -1,0 +1,59 @@
+---
+title: 'Dimitri Holdings'
+description: 'End-to-end small-business accounting workflow: bank import, 20+ journal entries, trial balance, fix statements, close the books'
+---
+
+In this task, the agent needs to work through the accounting lifecycle for a new company, Dimitri Holdings. The agent is provided with a set of bank statements and transactions from the first month of business, along with a common chart of accounts that the business uses. This task spans multiple workflows that are common in accounting for small businesses.
+
+First, the agent needs to use the load_bank_transactions tool and the ledger_accounts tool to retrieve information about the company. Then, the agent needs to create a set of journal entries for Dimitri. To do this, the agent needs to use the ledger tool to create each journal entry. Here is an example tool call that the agent would make to do this: 
+
+```json
+data: {"type": "tool_call", "step": 7, "tool_name": "create_journal_entry", "arguments": {"date": "2024/06/01", "description": "Prepaid rent (3 months)", "lines": [{"account": "Expenses:Rent", "debit": 2100.0}, {"account": "Assets:Cash", "credit": 2100.0}]}, "description": "Executing create journal entry", "timestamp": "2025-09-07T22:10:35.103612"}
+
+data: {"type": "tool_result", "step": 7, "tool_name": "create_journal_entry", "result": {"result": "{\"entry_id\": \"JE_20250907221035104607\", \"status\": \"draft\", \"message\": \"Draft journal entry JE_20250907221035104607 created successfully. Use post_journal_entry to make it permanent.\"}"}, "timestamp": "2025-09-07T22:10:35.188227"}
+```
+
+The agent will need to enter over 20 entries. After the agent has completed the journal entries for the month and accounted for the additional adjustments that occur at the end of the month, the agent needs to generate a trial balance. It can do this using the ledger_balance tool. The agent should see the following trial balance if it’s completed the previous steps correctly:
+
+```
+                 $50.00  Assets:Office Supplies
+              $7,400.00  Assets:Accounts Receivable
+             $14,200.00  Assets:Automobile
+             $10,404.70  Assets:Cash
+              $3,000.00  Assets:Equipment
+              $1,400.00  Assets:Prepaid Rent
+               $-100.00  Assets:Accumulated Depreciation:Equipment
+               $-200.00  Assets:Accumulated Depreciation:Automobile
+             $-1,350.00  Liabilities:Accounts Payable
+            $-21,240.00  Equity:Owner's Capital
+              $1,000.00  Equity:Owner's Drawings
+            $-27,000.00  Revenue:Commissions
+              $1,200.00  Expenses:Advertising
+                $47.00  Expenses:Automobile:Gas
+              $1,020.00  Expenses:Automobile:Repairs
+                $60.00  Expenses:Bank Fees
+              $3,600.00  Expenses:Commissions:Co-broker
+               $100.00  Expenses:Depreciation:Equipment
+               $200.00  Expenses:Depreciation:Automobile
+                $58.30  Expenses:Merchant Fees
+               $640.00  Expenses:Office Supplies
+               $700.00  Expenses:Rent
+               $700.00  Expenses:Salaries
+               $510.00  Expenses:Telephone
+--------------------
+                     0
+```
+
+
+Now that the agent has a trial balance, it has all the information needed to work with two of the key financial statements that businesses maintain: the balance sheet and the income statement. The agent should now examine the balance sheet and income statement that the team has created by using the Excel tools. It should see the following: 
+<Frame caption="Excel sheet excerpt of Income Statement and Balance Sheet">
+  <img src="/images/initial_income_statement_and_balance.png" />
+</Frame>
+However, after referring back to the ledger entries, the agent should notice multiple errors in the existing income statement and balance sheet. The agent needs to make these fixes using the Excel tool. For example, the owner's personal purchase of \$240 in supplies should increase Office Supplies (asset) and Owner's Capital, but it is currently treated as an owner withdrawal. Update Office Supplies from \$120 to \$360 and increase Owner's Capital from \$21,000 to \$21,240. After all the changes, the agent should have a new balance sheet and income statement: 
+<Frame caption="Excel sheet excerpt of correct Income Statement and Balance Sheet">
+  <img src="/images/correct_income_statement_and_balance.png" />
+</Frame>
+
+Now, the agent can proceed with the final step: closing the books. To close the books, the agent needs to close out the revenues and expenses and then update the retained earnings for the month. The agent again would use the create_journal_entry tool to add the appropriate entries and the ledger_balance tool to create the finalized trial balance. The agent has now created a ledger, updated the key financial statements, and closed the books for Dimitri Holdings.
+
+

@@ -1,0 +1,24 @@
+---
+title: 'Bank Dividends'
+description: 'Equity research task building a commercial bank DDM using an operating model and Excel tools'
+---
+
+In this task, the agent needs to create a dividend discount model for a commercial bank. Dividend Discount Models are common tasks for equity research analysts at investment banks. For this task, the agent is provided with an Operating Model and some information about the bank in an Excel file. The agent also is also provided with an initial structure for the Dividend Discount Model. The agent will use the Excel tools to read each of these files. Here is an excerpt of the initial Dividend Discount Model: 
+
+![Initial Dividend Discount Model](/images/bank-dividends/ddm-initial.png)
+
+To start, the agent should fill in the historical data for Years 1-3 by referring to the key financial statements (balance sheet, income statement, cash flows) available as part of the operating model. After filling in the historical data, the agent will then need to project data for the remaining 7 years. The agent can do this by leveraging projection data available in the operating model and assumptions available in the DDM Excel file: 
+
+![Projections Section](/images/bank-dividends/ddm-projections.png)
+
+A key part of this workflow is finding the common stock dividends. The agent needs to recognize that because this is a commercial bank there is a CET Ratio that limits the amount of dividends that can be issued. This means that we have back into projecting our dividends by first calculating the other numbers in this table such as the Beginning Common Shareholders’ Equity and the Common Equity Tier 1:
+
+![Dividends and CET1](/images/bank-dividends/ddm-dividends-cet1.png)
+
+After completing the projections, the agent needs to discount and sum the dividends to get the PV of Dividends. This is a common formula derived from numbers the agent should have already calculated in previous steps. One of the last steps for the agent is to complete the Terminal Value calculations using the Growth Method: 
+
+![Terminal Value (Growth Method)](/images/bank-dividends/ddm-terminal-value.png)
+
+Once the agent completes these calculations, it needs to state whether it believes the company is overvalued or undervalued. In this, the company is definitely overvalued, as the bank’s current equity value is much higher than both the implied equity value and the key values from the sensitivity table. 
+
+

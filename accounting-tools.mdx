@@ -1,33 +1,43 @@
 ---
 title: 'Accounting Tools'
-description: 'Double-entry accounting system for comprehensive financial reporting and analysis'
+description: 'Double-entry ledger with register, T-accounts, journal entry workflow, and bank-import'
 ---
 
+Note on sessions
+- Each tool call runs in a per-session environment with its own files:
+  - Ledger file: `<session>/ledger.dat` (auto-created with opening balances)
+  - Trial balance output: `<session>/generated_trial_balance.txt`
+  - Journal entry database: `<session>/ledger.db`
+- Dates for filters use YYYY/MM/DD unless otherwise noted.
 
-## Account Balance Tools
+## Account Balance & Register
 
 ### `ledger_balance`
-Shows account balances with powerful filtering options for comprehensive financial reporting.
+Get account balances with flexible filtering, grouping, and display options. Also writes the same output to generated_trial_balance.txt in the session directory.
 
 <Accordion title="View Parameters & Response">
 
-**Parameters:**
+Parameters:
 ```json title="ledger_balance - Request"
 {
-  "query": "string (optional) - Query pattern to filter accounts (e.g., 'Assets', 'Expenses:Food')",
-  "date_range": "string (optional) - Date range for the report (e.g., '2024', 'last month', 'Q1 2024')",
-  "display_options": "object (optional) - Additional display formatting options"
+  "query": "string (optional) - Regex to filter accounts (e.g., 'Assets', '^Expenses:Food')",
+  "accounts": "array[string] (optional) - One or more account patterns; takes precedence over 'query'",
+  "begin_date": "string (optional) - Start date (YYYY/MM/DD)",
+  "end_date": "string (optional) - End date (YYYY/MM/DD)",
+  "depth": "integer (optional) - Limit account depth displayed",
+  "monthly": "boolean (optional) - Group by month",
+  "weekly": "boolean (optional) - Group by week",
+  "daily": "boolean (optional) - Group by day",
+  "yearly": "boolean (optional) - Group by year",
+  "flat": "boolean (optional) - Show full account names without indentation",
+  "no_total": "boolean (optional) - Don't show the final total"
 }
 ```
 
-**Response:**
+Response:
 ```json title="ledger_balance - Response"
 {
-  "success": true,
-  "balance_report": "Formatted balance report showing account totals",
-  "total_balance": "Summary of filtered accounts",
-  "query_applied": "Assets",
-  "date_range": "2024"
+  "result": "Raw Ledger 'balance' output as a formatted text report"
 }
 ```
 
@@ -35,330 +45,401 @@ Shows account balances with powerful filtering options for comprehensive financi
 
 ---
 
-### `ledger_register`
-Shows transaction register with detailed history for account analysis.
+### ledger_register
+Show a transaction register with support for filters, grouping, and sorting.
 
 <Accordion title="View Parameters & Response">
 
-**Parameters:**
+Parameters:
 ```json title="ledger_register - Request"
 {
-  "query": "string (optional) - Query pattern to filter transactions",
-  "date_range": "string (optional) - Date range for transactions",
-  "sorting_options": "object (optional) - Options for sorting the register output"
+  "query": "string (optional) - Regex to filter transactions (e.g., 'Expenses:Food', 'payee:Amazon')",
+  "begin_date": "string (optional) - Start date (YYYY/MM/DD)",
+  "end_date": "string (optional) - End date (YYYY/MM/DD)",
+  "monthly": "boolean (optional) - Group by month",
+  "weekly": "boolean (optional) - Group by week",
+  "daily": "boolean (optional) - Group by day",
+  "yearly": "boolean (optional) - Group by year",
+  "sort": "string (optional) - Sort key: 'date', 'amount', or 'payee'",
+  "by_payee": "boolean (optional) - Group by payee (-P)",
+  "current": "boolean (optional) - Show only transactions on or before today (-c)"
 }
 ```
 
-**Response:**
-```json title="ledger_register - Response"
+Response (contract):
+```json title="ledger_register - Response (success)"
 {
-  "success": true,
-  "register_report": "Detailed transaction register with dates, descriptions, and amounts",
-  "transaction_count": 45,
-  "date_range": "last month",
-  "total_amount": "$2,450.00"
+  "result": "string - Raw Ledger 'register' output as formatted text"
 }
 ```
 
-</Accordion>
+Response (error):
+```json title="ledger_register - Response (error)"
+{
+  "error": "string - Error message from Ledger or the tool"
+}
+```
 
-## Account Management Tools
+What the result contains
+- One line per posting, typically with 4–5 columns separated by at least two spaces:
+  - date: YYYY/MM/DD
+  - description: free text
+  - account: first token that contains a colon (e.g., Expenses:Food)
+  - amount: posting amount for that account (e.g., -$45.12 or $49.00)
+  - balance (optional): running total after the posting
+- Example snippet:
+```
+2025/05/01  SaaS subscription          Expenses:Software           $49.00          $49.00
+2025/05/01  SaaS subscription          Assets:Cash:Checking       -$49.00           $0.00
+2025/05/03  Grocery Store              Expenses:Food:Groceries    -$45.12         -$45.12
+2025/05/03  Grocery Store              Assets:Cash:Checking        $45.12           $0.00
+```
+
+
+## Account Management
+ 
+</Accordion>
 
 ### `ledger_accounts`
-Lists all accounts in the ledger file with optional filtering.
+List accounts defined in the ledger, with optional filtering.
 
 <Accordion title="View Parameters & Response">
 
-**Parameters:**
+Parameters:
 ```json title="ledger_accounts - Request"
 {
-  "query": "string (optional) - Query pattern to filter account names"
+  "query": "string (optional) - Regex to filter account names"
 }
 ```
 
-**Response:**
+Response:
 ```json title="ledger_accounts - Response"
 {
-  "success": true,
-  "accounts": [
-    "Assets:Checking",
-    "Assets:Savings",
-    "Income:Salary",
-    "Expenses:Food",
-    "Expenses:Utilities"
-  ],
-  "account_count": 25,
-  "query_applied": "Income"
+  "result": "Text list of account names (one per line)"
 }
+```
+
+</Accordion>
+
+
+## Transaction Analysis
+
+### `get_t_accounts`
+Produce T-account views (debits on the left, credits on the right) for selected accounts and date ranges.
+
+<Accordion title="View Parameters & Response">
+
+Parameters:
+```json title="get_t_accounts - Request"
+{
+  "accounts": "array[string] (optional) - Specific accounts to include (all accounts if omitted)",
+  "begin_date": "string (optional) - Start date (YYYY/MM/DD)",
+  "end_date": "string (optional) - End date (YYYY/MM/DD)"
+}
+```
+
+Response:
+```json title="get_t_accounts - Response"
+{
+  "result": "Formatted T-account text for each account with totals and balance (Dr/Cr)"
+}
+```
+
+Example output snippet:
+```
+============================================================
+                    Assets:Cash:Checking                    
+============================================================
+DEBIT                        │                        CREDIT
+-----------------------------┼------------------------------
+       1,250.00              │
+-----------------------------┼------------------------------
+Total:         1,250.00      │ Total:             0.00
+============================================================
+Balance: $1,250.00 Dr
+```
+
+</Accordion>
+
+
+## Bank Import & Reconciliation
+
+### `load_bank_transactions`
+Load and normalize bank transactions from a CSV file for review and matching. Detects likely matches already present in the ledger.
+
+<Accordion title="View Parameters & Response">
+
+Parameters:
+```json title="load_bank_transactions - Request"
+{
+  "file_path": "string (required) - Absolute path to CSV with headers: Date, Description, Amount (3-column) or Date, Description, Credit, Debit (4-column)",
+  "account": "string (required) - GL account for these transactions (e.g., 'Assets:Cash:Mercury')"
+}
+```
+
+Response:
+```json title="load_bank_transactions - Response (top-level)"
+{
+  "result": "JSON string (parse it to access fields below)"
+}
+```
+
+Parsed JSON structure:
+```json title="load_bank_transactions - Parsed Result"
+{
+  "transaction_count": 123,
+  "transactions": [
+    {
+      "transaction_id": "sha1-hash",
+      "date": "2024/03/12",
+      "description": "CARD PURCHASE WHOLE FOODS",
+      "amount": -54.28,
+      "account": "Assets:Cash:Mercury",
+      "status": "matched | unmatched"
+    }
+  ]
+}
+```
+
+Notes:
+- Supported date formats in CSV: YYYY-MM-DD, YYYY/MM/DD, MM/DD/YYYY, DD/MM/YYYY.
+- CSV header options: "Date, Description, Amount" (3 columns) or "Date, Description, Credit, Debit" (4 columns). If Credit/Debit are present, they are normalized to a single numeric amount.
+- Amounts are parsed as numbers; currency symbols and commas are stripped.
+- On errors, the result is a JSON string like: `{"error": "message here"}`.
+
+</Accordion>
+
+
+## Journal Entry Workflow
+
+### `create_journal_entry`
+Create a draft journal entry in the session database for review. Entries must balance (total debits = total credits).
+
+<Accordion title="View Parameters & Response">
+
+Parameters:
+```json title="create_journal_entry - Request"
+{
+  "date": "string (required) - YYYY/MM/DD or YYYY-MM-DD",
+  "description": "string (required) - Detailed description",
+  "lines": [
+    {
+      "account": "string (required) - e.g., 'Expenses:Food'",
+      "debit": "number (optional, default 0)",
+      "credit": "number (optional, default 0)"
+    }
+  ],
+  "justification": "string (optional) - Business reason",
+  "source_ids": "array[string] (optional) - IDs from bank imports to link"
+}
+```
+
+Response:
+```json title="create_journal_entry - Response (top-level)"
+{
+  "result": "JSON string (parse for details)"
+}
+```
+
+Parsed JSON structure:
+```json title="create_journal_entry - Parsed Result"
+{
+  "entry_id": "JE-uuid-or-hash",
+  "status": "draft",
+  "message": "Draft journal entry ... created successfully. Use post_journal_entry to make it permanent."
+}
+```
+
+Errors are returned as:
+```json
+{"error": "Why it failed"}
 ```
 
 </Accordion>
 
 ---
 
-### `ledger_payees`
-Lists all payees from transactions with optional filtering.
+### `get_journal_entries`
+Query journal entries (draft or posted) with multiple filters.
 
 <Accordion title="View Parameters & Response">
 
-**Parameters:**
-```json title="ledger_payees - Request"
+Parameters:
+```json title="get_journal_entries - Request"
 {
-  "query": "string (optional) - Query pattern to filter payee names"
+  "entry_ids": "array[string] (optional) - Fetch specific IDs",
+  "status": "string (optional, default 'all') - 'draft' | 'posted' | 'all'",
+  "begin_date": "string (optional) - YYYY/MM/DD",
+  "end_date": "string (optional) - YYYY/MM/DD",
+  "account": "string (optional) - Return entries that include this account",
+  "source_id": "string (optional) - Entries linked to a specific bank transaction"
 }
 ```
 
-**Response:**
-```json title="ledger_payees - Response"
+Response:
+```json title="get_journal_entries - Response (top-level)"
 {
-  "success": true,
-  "payees": [
-    "Amazon",
-    "Whole Foods",
-    "Utility Company",
-    "Employer Corp"
-  ],
-  "payee_count": 42,
-  "query_applied": "Amazon"
+  "result": "JSON string (pretty-printed array)"
 }
+```
+
+Parsed JSON structure:
+```json title="get_journal_entries - Parsed Result"
+[
+  {
+    "entry_id": "JE-123",
+    "date": "2024/04/01",
+    "description": "April rent",
+    "status": "draft | posted",
+    "lines": [
+      {"account": "Expenses:Rent", "debit": 2000, "credit": 0},
+      {"account": "Assets:Cash:Checking", "debit": 0, "credit": 2000}
+    ],
+    "created_at": "2024-04-01T12:34:56.789000",
+    "posted_at": "2024-04-01T12:45:00.000000",
+    "modified_at": "2024-04-01T12:44:59.000000",
+    "source_ids": ["<optional-import-id>"]
+  }
+]
+```
+
+Errors are returned as:
+```json
+{"error": "Failed to retrieve journal entries: message"}
 ```
 
 </Accordion>
 
 ---
 
-### `ledger_commodities`
-Lists all commodities (currencies) used in the ledger.
+### `post_journal_entry`
+Post a draft entry to make it permanent. This dual-writes: marks it posted in the database and appends the formatted entry to the session’s ledger.dat. The ledger file is validated after write.
 
 <Accordion title="View Parameters & Response">
 
-**Parameters:**
-```json title="ledger_commodities - Request"
+Parameters:
+```json title="post_journal_entry - Request"
 {
-  "query": "string (optional) - Query pattern to filter commodities"
+  "entry_id": "string (required) - The draft entry to post"
 }
 ```
 
-**Response:**
-```json title="ledger_commodities - Response"
+Response:
+```json title="post_journal_entry - Response (top-level)"
 {
-  "success": true,
-  "commodities": [
-    "USD",
-    "EUR",
-    "AAPL",
-    "BTC"
-  ],
-  "commodity_count": 8
+  "result": "JSON string (parse for details)"
 }
 ```
 
-</Accordion>
-
-## Transaction Analysis Tools
-
-### `ledger_print`
-Prints transactions in ledger format for detailed analysis.
-
-<Accordion title="View Parameters & Response">
-
-**Parameters:**
-```json title="ledger_print - Request"
+Parsed JSON structure (success):
+```json title="post_journal_entry - Parsed Result"
 {
-  "query": "string (optional) - Query pattern to filter transactions",
-  "date_range": "string (optional) - Date range for transactions"
-}
-```
-
-**Response:**
-```json title="ledger_print - Response"
-{
-  "success": true,
-  "ledger_entries": "Formatted ledger entries in standard double-entry format",
-  "transaction_count": 15,
-  "date_range": "Q1 2024"
-}
-```
-
-</Accordion>
-
----
-
-### `ledger_stats`
-Shows comprehensive statistics about the ledger file.
-
-<Accordion title="View Parameters & Response">
-
-**Parameters:**
-```json title="ledger_stats - Request"
-{
-  "query": "string (optional) - Query pattern to filter statistics"
-}
-```
-
-**Response:**
-```json title="ledger_stats - Response"
-{
-  "success": true,
-  "statistics": {
-    "total_transactions": 523,
-    "date_range": "2020-01-01 to 2024-12-31",
-    "account_count": 45,
-    "payee_count": 78,
-    "commodity_count": 6
+  "entry_id": "JE-123",
+  "status": "posted",
+  "posted_at": "2024-04-01T12:45:00.000000",
+  "ledger_impact": {
+    "...": "Implementation-specific details of amounts/accounts"
   },
-  "file_info": {
-    "file_size": "125 KB",
-    "last_modified": "2024-01-15"
-  }
+  "message": "Journal entry JE-123 successfully posted to both database and ledger file"
 }
+```
+
+If the ledger file write or validation has issues:
+```json
+{
+  "entry_id": "JE-123",
+  "status": "posted",
+  "posted_at": "2024-04-01T12:45:00.000000",
+  "ledger_impact": { },
+  "warning": "Ledger file update failed: ...",
+  "message": "Journal entry JE-123 posted to database only"
+}
+```
+
+Errors are returned as:
+```json
+{"error": "Why posting failed"}
 ```
 
 </Accordion>
 
-## Budget and Analysis Tools
-
-### `ledger_budget`
-Shows budget analysis with variance reporting.
-
-<Accordion title="View Parameters & Response">
-
-**Parameters:**
-```json title="ledger_budget - Request"
-{
-  "query": "string (optional) - Query pattern for budget analysis",
-  "date_range": "string (optional) - Date range for budget period",
-  "reporting_period": "string (optional) - Period grouping (monthly, quarterly, yearly)"
-}
-```
-
-**Response:**
-```json title="ledger_budget - Response"
-{
-  "success": true,
-  "budget_report": "Formatted budget vs actual analysis",
-  "period": "monthly",
-  "variance_summary": {
-    "over_budget": "$245.00",
-    "under_budget": "$156.00",
-    "categories_analyzed": 12
-  }
-}
-```
-
-</Accordion>
-
----
-
-### `ledger_raw_command`
-Runs a raw Ledger CLI command for advanced functionality.
-
-<Accordion title="View Parameters & Response">
-
-**Parameters:**
-```json title="ledger_raw_command - Request"
-{
-  "command_args": "array[string] (required) - Command arguments as list of strings (e.g., ['bal', '--depth', '2', 'Assets'])"
-}
-```
-
-**Response:**
-```json title="ledger_raw_command - Response"
-{
-  "success": true,
-  "command_output": "Raw output from Ledger CLI command",
-  "command_executed": "ledger bal --depth 2 Assets",
-  "exit_code": 0
-}
-```
-
-</Accordion>
 
 ## Usage Examples
 
-### Personal Finance Analysis
+### Common reporting
 ```python
-# Check account balances
+# Account balances for top-level Assets, flat names, depth 2
 balances = call_tool("ledger_balance", {
-  "query": "Assets",
-  "date_range": "2024"
+  "accounts": ["Assets"],
+  "depth": 2,
+  "flat": True
 })
 
-# Review spending patterns
-food_expenses = call_tool("ledger_register", {
-  "query": "Expenses:Food",
-  "date_range": "last 3 months"
+# Month-by-month expenses YTD
+expenses_by_month = call_tool("ledger_balance", {
+  "accounts": ["Expenses"],
+  "begin_date": "2025/01/01",
+  "end_date": "2025/12/31",
+  "monthly": True
 })
 
-# Get budget variance report
-budget_analysis = call_tool("ledger_budget", {
-  "query": "Expenses",
-  "date_range": "2024",
-  "reporting_period": "monthly"
+# Register for groceries last quarter, sorted by amount
+grocery_register = call_tool("ledger_register", {
+  "query": "Expenses:Food:Groceries",
+  "begin_date": "2025/04/01",
+  "end_date": "2025/06/30",
+  "sort": "amount"
 })
 ```
 
-### Business Accounting Workflow
+### T-account analysis
 ```python
-# Generate income statement data
-revenue_accounts = call_tool("ledger_balance", {
-  "query": "Income",
-  "date_range": "2024"
-})
-
-expense_accounts = call_tool("ledger_balance", {
-  "query": "Expenses", 
-  "date_range": "2024"
-})
-
-# Analyze cash flow
-cash_flow = call_tool("ledger_register", {
-  "query": "Assets:Cash",
-  "date_range": "Q4 2024"
-})
-
-# Get detailed transaction data
-transactions = call_tool("ledger_print", {
-  "query": "tag:business",
-  "date_range": "2024"
+t_accounts = call_tool("get_t_accounts", {
+  "accounts": ["Assets:Cash:Checking", "Expenses:Rent"],
+  "begin_date": "2025/01/01",
+  "end_date": "2025/03/31"
 })
 ```
 
-### Investment Portfolio Tracking
+### Bank import and reconciliation
 ```python
-# Track investment accounts
-investment_balances = call_tool("ledger_balance", {
-  "query": "Assets:Investments",
-  "date_range": "2024"
+# Import CSV (must be absolute path) and normalize
+import_result = call_tool("load_bank_transactions", {
+  "file_path": "/absolute/path/to/mercury_may.csv",
+  "account": "Assets:Cash:Mercury"
 })
-
-# Review investment transactions
-investment_history = call_tool("ledger_register", {
-  "query": "Assets:Investments:Stocks",
-  "date_range": "last year"
-})
-
-# Check portfolio commodities
-portfolio_assets = call_tool("ledger_commodities", {
-  "query": "AAPL|MSFT|GOOGL"
-})
+# Parse JSON string result if needed:
+# data = json.loads(import_result["result"])
 ```
 
-### Advanced Reporting
+### Journal entries: draft, review, post
 ```python
-# Custom balance sheet depth
-balance_sheet = call_tool("ledger_raw_command", {
-  "command_args": ["bal", "--depth", "3", "Assets", "Liabilities"]
+# Create a draft JE for software subscription
+draft = call_tool("create_journal_entry", {
+  "date": "2025/05/01",
+  "description": "SaaS subscription - May",
+  "lines": [
+    {"account": "Expenses:Software", "debit": 49.00, "credit": 0},
+    {"account": "Assets:Cash:Checking", "debit": 0, "credit": 49.00}
+  ],
+  "justification": "Monthly subscription per contract"
 })
 
-# Profit and loss statement
-pnl = call_tool("ledger_raw_command", {
-  "command_args": ["bal", "--period", "monthly", "Income", "Expenses"]
+# List draft entries for review
+drafts = call_tool("get_journal_entries", {
+  "status": "draft",
+  "begin_date": "2025/05/01",
+  "end_date": "2025/05/31"
 })
 
-# Account statistics
-stats = call_tool("ledger_stats", {
-  "query": "2024"
+# Post a specific draft by ID
+posted = call_tool("post_journal_entry", {
+  "entry_id": "JE-1234567890"
 })
 ```
 
+Practical tips
+- Choose only one of monthly/weekly/daily/yearly for grouping.
+- CSV import accepts dates: YYYY-MM-DD, YYYY/MM/DD, MM/DD/YYYY, or DD/MM/YYYY.
+- Positive amounts in T-accounts are treated as debits; negative as credits.
+- On first use in a session, a ledger.dat is created automatically with an opening balance entry dated 2024/01/01.

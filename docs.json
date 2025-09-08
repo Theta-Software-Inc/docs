@@ -3,9 +3,9 @@
   "theme": "mint",
   "name": "Theta SDK Documentation",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#2B7A78",
+    "light": "#1F5F5E",
+    "dark": "#1F5F5E"
   },
   "favicon": "/favicon.svg",
   "navigation": {
@@ -35,8 +35,12 @@
             "pages": [
               "calendarization-example",
               "lbo-model-example",
+              "lbo-model-example-2",
               "real-estate-model-example",
-              "venture-capital-example"
+              "venture-capital-example",
+              "dimitri-holdings-example",
+              "bank-dividends-example",
+              "comps-example"
             ]
           }
         ]

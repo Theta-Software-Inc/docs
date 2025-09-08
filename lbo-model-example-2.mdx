@@ -1,0 +1,40 @@
+---
+title: 'LBO Model 2'
+description: 'Private equity LBO modeling task with inputs, drivers, FCF/debt, and exit'
+---
+
+This task is representative of workflows in the private equity domain. An analyst is provided with a set of information about a target company, and then the agent has to fill out a complete LBO, including the inputs, drivers, free cash flow section, and the exit values. 
+
+The agent first needs to fill out an inputs section, which primarily comes from the information in the instructions. 
+
+![Inputs Section Example](/images/LBO2/lbo2-inputs.png)
+
+The agent will also need to understand how to combine multiple interest layers for the term loans and senior notes table. The agent also will need to plug in values for the sources and uses section based on numbers calculated as part of the inputs, keeping in mind that the sources and uses both need to balance. 
+
+From there, the agent can move onto calculating the drivers for the model. To find the correct values, the agent frequently needs to make multiple sets of calculations on numbers available in the instructions. For example, to find the COGS, the agent first needs to calculate the average price per widget. To calculate the average price per widget, the agent needs to make further calculations as well. This is the completed drivers section the agent should create: 
+![Drivers Section Example](/images/LBO2/lbo2-drivers.png)
+The agent then needs to complete the FCF and debt items. We walkthrough calculating one line item within this section: the CF Available for Debt Repayments
+
+
+To find the CF available for Debt Repayments, we first need to find the Mandatory Repayments, Beginning Cash Balance, Min. Cash, and the Free Cash Flow. For the Mandatory Repayments, we multiply the Term Loan Amount by the Term Loan Repayment %. Our beginning cash balance is $25M, taken from the Initial Cash Injection provided in the model. Future years’ beginning balance can be taken from the previous year’s ending cash. We can fill in our Min Cash line to be 5% of our sales, as per cell I8. Our Free Cash Flow can be plugged in from the Free Cash Flow row present earlier in the sheet. By summing all of these values each year, we get our CF Available for Debt Repayment. Here is a look at the completed version of this section:
+![FCF and Debt Section](/images/LBO2/lbo2-fcf-debt.png)
+
+We then need to complete our exit table, which is partially filled in for the agent:
+![Exit Table Example](/images/LBO2/lbo2-exit.png)
+
+ 
+
+Our Exit Enterprise Value comes from multiplying our EBITDA in our last year of projection by the Exit EBITDA multiple defined as part of our inputs. Debt, Cash, and the other numbers flow from earlier values in the sheet. We note that the Cash from Management Options comes from the 5% Management Options Pool. Our Equity to Management Optionholders is also derived from our Management Options Pool. 
+
+
+
+
+
+
+
+
+
+
+
+
+
