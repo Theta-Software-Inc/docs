@@ -1,6 +1,6 @@
 ---
 title: 'Bank Dividends'
-description: 'Equity research task building a commercial bank DDM using an operating model and Excel tools'
+description: 'Equity research task building a commercial bank DDM'
 ---
 
 In this task, the agent needs to create a dividend discount model for a commercial bank. Dividend Discount Models are common tasks for equity research analysts at investment banks. For this task, the agent is provided with an Operating Model and some information about the bank in an Excel file. The agent also is also provided with an initial structure for the Dividend Discount Model. The agent will use the Excel tools to read each of these files. Here is an excerpt of the initial Dividend Discount Model: 
@@ -17,7 +17,9 @@ A key part of this workflow is finding the common stock dividends. The agent nee
 
 After completing the projections, the agent needs to discount and sum the dividends to get the PV of Dividends. This is a common formula derived from numbers the agent should have already calculated in previous steps. One of the last steps for the agent is to complete the Terminal Value calculations using the Growth Method: 
 
-![Terminal Value (Growth Method)](/images/bank-dividends/ddm-terminal-value.png)
+<Frame caption="Terminal Value (Growth Method)">
+  <img src="/images/bank-dividends/ddm-terminal-value.png" width="540" />
+</Frame>
 
 Once the agent completes these calculations, it needs to state whether it believes the company is overvalued or undervalued. In this, the company is definitely overvalued, as the bank’s current equity value is much higher than both the implied equity value and the key values from the sensitivity table. 
 
