@@ -33,14 +33,35 @@
           {
             "group": "Task Examples",
             "pages": [
-              "calendarization-example",
-              "lbo-model-example",
-              "lbo-model-example-2",
-              "real-estate-model-example",
-              "venture-capital-example",
-              "dimitri-holdings-example",
-              "bank-dividends-example",
-              "comps-example"
+              {
+                "group": "Accounting",
+                "pages": [
+                  "dimitri-holdings-example",
+                  "cash-flows-example"
+                ]
+              },
+              {
+                "group": "Private Equity",
+                "pages": [
+                  "lbo-model-example",
+                  "lbo-model-example-2"
+                ]
+              },
+              {
+                "group": "Investment Banking",
+                "pages": [
+                  "calendarization-example",
+                  "comps-example",
+                  "bank-dividends-example"
+                ]
+              },
+              {
+                "group": "Other",
+                "pages": [
+                  "real-estate-model-example",
+                  "venture-capital-example"
+                ]
+              }
             ]
           }
         ]

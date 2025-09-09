@@ -1,0 +1,34 @@
+---
+title: 'Cash Flows'
+description: 'Prepare cash flow statements and projections by reconciling BS/IS with supporting docs (Monster Beverage)'
+---
+
+In this task, the agent is provided with the balance sheet, income statement, and some additional financial documents for Monster Beverage, and it needs to prepare the cash flow statements and projections. The 3 financial statements are a critical part of corporate accounting workflows. This task tests the agent's ability to parse through information and to follow accounting principles for connecting and reconciling line items.
+
+<Frame caption="Excerpt from balance sheet data available to the agent">
+  <img src="/images/cash-flows/cash-flows-balance-sheet-excerpt.png" />
+</Frame>
+
+<Frame caption="Initial Cash Flow Statement">
+  <img src="/images/cash-flows/cash-flows-initial-cash-flow.png" />
+</Frame>
+
+The line items within the "Cash Flows from Operating Activities" section can be filled in by leveraging numbers available on the same Excel sheet or in the supporting financial documents. We walk through one example with the Prepaid Expenses & Other Assets for 2019. Within the supporting financial document for Monster Beverage in 2019, we see the following information:
+
+<img src="/images/cash-flows/cash-flows-supporting-prepaid-excerpt.png" />
+
+We see that there was a \$9.5 million decrease in prepaid income taxes, and a \$13.8 million increase in prepaid expenses and other assets. To find the Prepaid Expenses & Other Assets, we take the difference in the two numbers, which leads to -\$4.3M for the line item. The agent needs to recognize that "prepaid income taxes" fall under "prepaid expenses and other assets" based on the construction of our cash flow statement. The agent also needs to properly combine these values across both the operating activities and the cash used by operating activities.
+
+The investing and financing activities section of the cash flow statement has already been filled in for the historical years, so the agent can now proceed with completing the projections for the cash flow statement. To complete the projections, the agent first needs to complete the drivers for the cash flow statement projections:
+
+<img src="/images/cash-flows/cash-flows-cash-flow-drivers.png" />
+
+These numbers can be calculated by leveraging the figures on both the Income Statement and Cash Flow Statement. Once these drivers are calculated for each year, they plug directly into the projection years for the cash flow statement:
+
+<Frame caption="Excerpt from the completed Cash Flows Statement">
+  <img src="/images/cash-flows/cash-flows-cash-flow-statement-completed.png" />
+</Frame>
+
+For example, the Amortization numbers we see above are derived from the Amortization % Revenue multiplied by the projected Revenue, which is provided to us as part of the Income Statement figures. Once the agent fills out the projected figures for the cash flow statement, it has completed the task.
+
+
