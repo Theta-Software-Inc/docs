@@ -12,22 +12,19 @@ The **Theta Playground** is our environment that allows agents to complete tasks
 
 ### 1. Execute an Autonomous Task
 
-Start a streaming financial analysis task:
+Start streaming a accounting analysis task:
 
 ```bash
-curl -N -X POST "https://playground.thetasoftware.ai/agent/tasks/{taskID}/execute/stream" \
-  -H "Authorization: Bearer $THETA_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "model": "gpt-4.1", # insert model-> 4o, 4o-mini, gpt-4.1, gpt4.1-mini, o1, o3, o3-pro, o3-mini
-    "max_steps": 30,
-    "openai_api_key": "'$OPENAI_API_KEY'"
-  }'
+curl --no-buffer -X POST \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/x-ndjson' \
+  --data '{"task_id":"dimitri_holdings","api_key":"theta_XXXX","openai_api_key":"'"$OPENAI_API_KEY"'","model":"gpt-4o","max_steps":50}' \
+  'https://playground.trythetasoftware.com/evaluate/stream?style=cli'
 ```
 This will:
-1. Create an isolated workspace for the AI agent with the initstate of the task
+1. Create an isolated sandbox for the AI agent with the initial state of the task
 2. Stream real-time actions as the model uses the tools to complete the task
-3. Return and score
+3. Evaluate agent output accoring to a reward function to reveal a final score
 
 **Available Task IDs:**
 - `calendarization` - Complex quarterly financial data calendarization task
@@ -39,12 +36,30 @@ This will:
 
 Example streaming response shows each step:
 ```json
-data: {"type": "tool_call", "step": 1, "tool_name": "finance_get_income_statements", "arguments": {"ticker": "WMT", "period": "quarterly", "limit": 4}}
-data: {"type": "tool_call", "step": 2, "tool_name": "finance_get_balance_sheets", "arguments": {"ticker": "WMT", "period": "quarterly", "limit": 4}}
-data: {"type": "tool_call", "step": 3, "tool_name": "excel_create_workbook", "arguments": {"filepath": "Walmart_Calendarized_Financials.xlsx"}}
+{"type": "log", "message": "Authenticating..."}
+{"type": "log", "message": "Authenticated as API User ..."}
+{"type": "log", "message": "Creating sandbox..."}
+{"type": "log", "message": "Sandbox ready"}
 ...
-data: {"type": "execution_completed", "steps_executed": 9, "score": 0.0}
-
+....
+.....
+{"type": "log", "message": "Tool 26: Starting create_journal_entry"}
+{"type": "log", "message": "Tool 27: Starting create_journal_entry"}
+{"type": "log", "message": "Tool 27: Completed create_journal_entry"}
+{"type": "log", "message": "   Result: {\"type\":\"text\",\"text\":\"{\\\"entry_id\\\":\\\"JE_20250916191335428715\\\",\\\"status\\\":\\\"draft\\\",\\\"message\\\":\\\"Draft journal entry JE_20250916191335428715 created successfully. Use post_journal_entry to make it permanent.\\\"}\",\"annotations\":null,\"meta\":null}"}
+{"type": "log", "message": "Tool 26: Completed create_journal_entry"}
+{"type": "log", "message": "   Result: {\"type\":\"text\",\"text\":\"{\\\"entry_id\\\":\\\"JE_20250916191335446295\\\",\\\"status\\\":\\\"draft\\\",\\\"message\\\":\\\"Draft journal entry JE_20250916191335446295 created successfully. Use post_journal_entry to make it permanent.\\\"}\",\"annotations\":null,\"meta\":null}"}
+...
+....
+.....
+{"type": "log", "message": "Result Summary:"}
+{"type": "log", "message": "------------------------------"}
+{"type": "log", "message": "Status: completed"}
+{"type": "log", "message": "Execution ID: 5b8d82b9-e270-4e8f-982d-32c5a358f42b"}
+{"type": "log", "message": "Model: gpt-4o"}
+{"type": "log", "message": "Steps/Tools: 34"}
+{"type": "log", "message": "Duration: 102.4s"}
+{"type": "log", "message": "Score: 0.000"}
 ```
 
 ## Available Tools
@@ -73,4 +88,4 @@ Evaluating the agent’s ability to complete the task is a critical component of
 
 Contact support to get your Theta API key:
 - **Format:** `theta_xxxxxxxxxxxxxxxxxxxxxxx`
-- **Usage:** Include in Authorization header: `Bearer theta_YOUR_API_KEY`
+- **Usage:** Include in Authorization header: `"api_key": "theta_YOUR_API_KEY"`
