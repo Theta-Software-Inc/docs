@@ -42,24 +42,10 @@ When the agent is completed with its work, we evaluate the agent's resulting fil
 - `excel_validate_formula_syntax`  
   Validate the syntax of Excel formulas.
 
-- `excel_validate_excel_range`  
+- `excel_validate_excel_range`
   Validate the range of cells in an Excel file.
 
-## Example Workflow
+## Task Materials
 
-1. `getSECFilings`
-   Locate the latest 10-K and relevant 10-Q filings for the company.
-2. `readDocument`
-   Extract text and tables from the filings for analysis.
-3. `analyzeDocumentStructure`
-   Identify sections/tables containing revenue and nine-month figures.
-4. `excel_read_data_from_excel`  
-   Open the calendarization template or working Excel file.
-5. `excel_write_data_to_excel`  
-   Enter nine-month and full-year figures into the worksheet.
-6. `excel_apply_formula`
-   Compute Q4 accounting for partial months as specified.
-7. `excel_validate_formula_syntax`
-   Verify formula correctness before committing.
-8. `excel_validate_excel_range`
-   Confirm referenced cell ranges are valid.
+- [Instructions](/files/calendarization/Instructions.pdf)
+- [Initial File](/files/calendarization/InitState.xlsx)

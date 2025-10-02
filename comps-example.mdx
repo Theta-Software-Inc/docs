@@ -86,4 +86,30 @@ Once the agent has filled out all of the input sections, it can close out the ta
 
 **Note:** It often takes investment bankers multiple days-weeks of work to create a high-quality DCF. Therefore, we break each DCF into multiple smaller tasks representing workflows that often take >1 hour for an IB analyst to complete. We have seen that this is actually more valuable for the model training process as well. In this case, we have multiple other tasks for this DCF, including Comps 2, which involves inputting financial data for the other comparable companies that were screened, creating the comparables table from this aggregated data, and then using this information for projections with Jazz Pharmaceuticals. 
 
+## Tools Used
 
+- `getSECFilings`  
+  Retrieve SEC filings (10-K, 10-Q, etc.) for a specified company.
+
+- `getFinancials`  
+  Retrieve financial statement data for a company, including quarterly and annual figures.
+
+- `readDocument`  
+  Read and extract data from documents such as PDFs or Word files.
+
+- `analyzeDocumentStructure`  
+  Analyze the structure of a document to identify sections, tables, and key data points.
+
+- `excel_read_data_from_excel`  
+  Read data from an Excel file.
+
+- `excel_write_data_to_excel`  
+  Write data to an Excel file.
+
+- `excel_apply_formula`  
+  Apply formulas to cells in an Excel file.
+
+## Task Materials
+
+- [Instructions](/files/comps/Instructions.pdf)
+- [Initial File](/files/comps/InitState.xlsx)

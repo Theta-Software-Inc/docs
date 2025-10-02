@@ -1,0 +1,102 @@
+---
+title: 'Archived Workflows'
+description: 'Hidden file containing archived Example Workflow sections'
+hidden: true
+---
+
+# Archived Example Workflows
+
+This file contains Example Workflow sections that have been removed from public documentation pages.
+
+---
+
+## Calendarization - Example Workflow
+
+1. `getSECFilings`
+   Locate the latest 10-K and relevant 10-Q filings for the company.
+2. `readDocument`
+   Extract text and tables from the filings for analysis.
+3. `analyzeDocumentStructure`
+   Identify sections/tables containing revenue and nine-month figures.
+4. `excel_read_data_from_excel`  
+   Open the calendarization template or working Excel file.
+5. `excel_write_data_to_excel`  
+   Enter nine-month and full-year figures into the worksheet.
+6. `excel_apply_formula`
+   Compute Q4 accounting for partial months as specified.
+7. `excel_validate_formula_syntax`
+   Verify formula correctness before committing.
+8. `excel_validate_excel_range`
+   Confirm referenced cell ranges are valid.
+
+---
+
+## Venture Capital Analysis - Example Workflow
+
+1. `getCrunchbaseCompanyInfo`  
+   Fetch company profile and capture the `uuid` needed for downstream calls.
+2. `getCrunchbaseFundingRounds`  
+   Query rounds using the company `uuid` to retrieve amounts, dates, and investors.
+3. 'readDocument'
+   Pull assumptions from the provided PDF.
+3. `excel_read_data_from_excel`  
+   Open the rounds/cap table worksheet.
+4. `excel_write_data_to_excel`
+   Populate round-by-round inputs (date, amount, pre/post, investors).
+5. `excel_apply_formula`
+   Compute dilution, ownership by round, and exit waterfall metrics.
+
+---
+
+## Real Estate Model - Example Workflow
+
+1. `getSaleListings`  
+   Search active listings that match budget, square footage, and agent constraints.
+3. `getPropertyById`  
+   Pull detailed specs and confirm the target property's key attributes.
+4. `getValueEstimate`  
+   Estimate market value using comparable sales.
+5. 'getRentEstimate'
+   Get an estimated rent estimate for the property.
+6. `analyzeProperty`  
+   Consolidate value, rent, and investment metrics for screening.
+7. `getMarketStatistics`
+   Add ZIP-level context and compare alternative submarkets.
+8. 'compareMarkets'
+   Compare real estate market data across multiple locations.
+9. 'findInvestmentProperties'
+   Search for porperties that meet investment criteria
+10. `searchSources`
+   Search for material cost sources and suppliers.
+11. 'getLaborRates'
+   Retrive labor rates for specific trades locations.
+12. `readDocument`  
+   Pull assumptions from the provided PDF.
+13. 'getEquipmentRentalRates'
+   Get equipment rental rates for specified equipment types and locations.
+10. `excel_read_data_from_excel`  
+   Open the model workbook.
+11. `excel_write_data_to_excel`  
+   Fill in assumptions, costs, and unit mix into the model.
+
+---
+
+## LBO Model - Example Workflow
+
+1. `readDocument`  
+   Parse the assumptions document to extract debt tranches, rates, fees, and amortization rules.
+2. `excel_read_data_from_excel`  
+   Load the partially completed LBO workbook to understand existing links and inputs.
+3. `getInterestRates`  
+   Retrieve applicable benchmark/federal rates for the modeling period.
+4. `getHistoricalPrices`
+   Get the current price or value of a security.
+5. 'getHistoricalPrices'
+   Get historical prices for a security.
+6. `excel_write_data_to_excel`  
+   Populate the debt schedule inputs and any missing assumptions.
+7. `excel_apply_formula`  
+   Calculate interest expense, mandatory amortization, cash sweep, and link to FCF.
+8. `excel_validate_formula_syntax`  
+   Validate complex formulas to avoid errors and ensure correct references.
+

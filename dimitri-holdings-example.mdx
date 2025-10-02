@@ -56,4 +56,43 @@ However, after referring back to the ledger entries, the agent should notice mul
 
 Now, the agent can proceed with the final step: closing the books. To close the books, the agent needs to close out the revenues and expenses and then update the retained earnings for the month. The agent again would use the create_journal_entry tool to add the appropriate entries and the ledger_balance tool to create the finalized trial balance. The agent has now created a ledger, updated the key financial statements, and closed the books for Dimitri Holdings.
 
+## Tools Used
 
+- `excel_read_data_from_excel`  
+  Read data from an Excel file.
+
+- `excel_write_data_to_excel`  
+  Write data to an Excel file.
+
+- `excel_apply_formula`  
+  Apply formulas to cells in an Excel file.
+
+- `excel_copy_range`  
+  Copy a range of cells in an Excel file.
+
+- `ledger_balance`  
+  Generate a trial balance from the ledger.
+
+- `ledger_accounts`  
+  Retrieve the chart of accounts.
+
+- `get_t_accounts`  
+  Get T-accounts for specific ledger accounts.
+
+- `load_bank_transactions`  
+  Load bank transactions from a CSV file.
+
+- `create_journal_entry`  
+  Create a journal entry in the ledger.
+
+- `post_journal_entry`  
+  Post a journal entry to make it permanent.
+
+- `readDocument`  
+  Read and extract data from documents such as PDFs or Word files.
+
+## Task Materials
+
+- [Instructions](/files/dimitri-holdings/Instructions.pdf)
+- [Initial File](/files/dimitri-holdings/InitState.xlsx)
+- [Bank Transactions](/files/dimitri-holdings/Bank_Transactions.csv)
