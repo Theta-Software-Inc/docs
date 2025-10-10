@@ -48,16 +48,13 @@
               {
                 "group": "Investment Banking",
                 "pages": [
-                  "calendarization-example",
-                  "comps-example",
-                  "bank-dividends-example"
+                  "calendarization-example"
                 ]
               },
               {
                 "group": "Other",
                 "pages": [
-                  "real-estate-model-example",
-                  "venture-capital-example"
+                  "real-estate-model-example"
                 ]
               }
             ]

@@ -8,6 +8,10 @@ Click on `Use this template` to copy the Mintlify starter kit. The starter kit c
 - API Reference pages
 - Use of popular components
 
+### Temporarily Disabled Pages
+
+- `comps-example`, `bank-dividends-example`, and `venture-capital-example` are temporarily removed from `docs.json` navigation by request. Re-add them by restoring their entries in `navigation.tabs[0].groups`.
+
 ### Development
 
 Install the [Mintlify CLI](https://www.npmjs.com/package/mintlify) to preview the documentation changes locally. To install, use the following command
